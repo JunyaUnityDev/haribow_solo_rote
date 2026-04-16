@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダブルダッチ 審査ツール</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:14px;color:#1a1a1a;background:#f5f5f0;min-height:100vh;padding:24px 16px}
+.container{max-width:1000px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden}
+.tab-bar{display:flex;border-bottom:1px solid #e5e5e5;background:#fafafa;flex-wrap:wrap}
+.tab-btn{flex:1;min-width:100px;padding:14px 10px;font-size:12px;font-weight:600;color:#aaa;background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;font-family:inherit}
+.tab-btn:hover{color:#555;background:#f0f0f0}
+.tab-btn.active{color:#1a1a1a;border-bottom-color:#1a1a1a;background:#fff}
+.tab-content{display:none;padding:28px 32px}
+.tab-content.active{display:block}
+.section{margin-bottom:24px}
+.sec-title{font-size:11px;font-weight:600;color:#888;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:.5px solid #e5e5e5}
+h2{font-size:18px;font-weight:600;margin-bottom:4px;color:#111}
+.sub{font-size:13px;color:#888;margin-bottom:20px}
+hr.div{border:none;border-top:.5px solid #e8e8e8;margin:22px 0}
+.btn{font-size:13px;padding:7px 18px;border-radius:8px;border:.5px solid #d0d0d0;background:#fff;color:#333;cursor:pointer;font-family:inherit;transition:background .1s}
+.btn:hover{background:#f5f5f5}
+.btn.primary{background:#1a1a1a;border-color:#1a1a1a;color:#fff;font-weight:500}
+.btn.primary:hover{background:#333}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.field{margin-bottom:12px}
+.field label{display:block;margin-bottom:4px;font-size:12px;color:#888}
+select,input[type=text],input[type=number]{font-size:13px;padding:6px 10px;border-radius:8px;border:.5px solid #d0d0d0;background:#fff;color:#111;font-family:inherit;outline:none}
+select:focus,input:focus{border-color:#555}
+.member-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:.5px solid #f0f0f0;flex-wrap:wrap}
+.member-row:last-child{border-bottom:none}
+.name-input{font-size:13px;font-weight:500;padding:5px 9px;border-radius:7px;border:.5px solid #d0d0d0;background:#fff;color:#111;font-family:inherit;width:96px;flex-shrink:0;outline:none}
+.name-input:focus{border-color:#555}
+.pills{display:flex;flex-wrap:wrap;gap:5px;flex:1;min-width:0}
+.pill{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:.5px solid;cursor:pointer;white-space:nowrap;user-select:none}
+.pill:hover{opacity:.8}
+.pill.inactive{background:#f4f4f4!important;border-color:#ddd!important;color:#aaa!important}
+.del-btn{font-size:11px;padding:3px 9px;border-radius:6px;border:.5px solid #e0e0e0;background:#fff;color:#bbb;cursor:pointer;font-family:inherit;flex-shrink:0}
+.del-btn:hover{background:#fff0ee;border-color:#f5b8b0;color:#c0392b}
+.type-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;flex-shrink:0;white-space:nowrap}
+.badge-staff{background:#fff8ee;color:#9a6000;border:.5px solid #f5d090}
+.badge-judge{background:#eeedfe;color:#3C3489;border:.5px solid #AFA9EC}
+.chip{font-size:12px;font-weight:500;padding:2px 9px;border-radius:5px;white-space:nowrap}
+.chip.jumper{background:#fff0ee;border:.5px solid #f5b8b0;color:#c0392b}
+.chip.turner{background:#eef4ff;border:.5px solid #b0c8f5;color:#1a5fb4}
+.chip.judge-j{background:#fff8ee;border:.5px solid #f5d8a0;color:#9a6000}
+.chip.judge-r{background:#eefff4;border:.5px solid #a0e0b8;color:#1a7a40}
+.chip.staff{background:#f5f5f5;border:.5px dashed #ccc;color:#999}
+.skill-badge{font-size:12px;font-weight:600;padding:3px 12px;border-radius:20px;border:.5px solid}
+.rot-card{background:#fff;border:.5px solid #e5e5e5;border-radius:10px;margin-bottom:10px;overflow:hidden}
+.rot-header{display:flex;align-items:center;gap:12px;padding:9px 14px;background:#fafafa;border-bottom:.5px solid #e5e5e5;flex-wrap:wrap}
+.rot-num{font-size:12px;font-weight:600;color:#888;width:52px;flex-shrink:0}
+.rot-courts{display:grid;grid-template-columns:1fr 1fr}
+.court-cell{padding:11px 14px;border-right:.5px solid #e5e5e5}
+.court-cell:last-child{border-right:none}
+.court-label{font-size:10px;color:#aaa;margin-bottom:8px;font-weight:600;letter-spacing:.06em}
+.court-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap}
+.role-tag{font-size:11px;color:#bbb;width:56px;flex-shrink:0}
+.judge-sep{margin-top:8px;padding-top:8px;border-top:.5px dashed #ececec}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:#fafafa;border-radius:8px;padding:12px;text-align:center;border:.5px solid #eee}
+.stat-val{font-size:24px;font-weight:600;color:#111}
+.stat-lbl{font-size:11px;color:#999;margin-top:2px}
+.warn-box{background:#fff8ee;border:.5px solid #f5d090;border-radius:8px;padding:10px 14px;font-size:12px;color:#9a6000;margin-top:10px;line-height:1.7}
+.info-box{background:#eef4ff;border:.5px solid #b0c8f5;border-radius:8px;padding:10px 14px;font-size:12px;color:#1a5fb4;line-height:1.7}
+.ok-box{background:#eefff4;border:.5px solid #a0e0b8;border-radius:8px;padding:10px 14px;font-size:12px;color:#1a7a40}
+.err-box{background:#fff0ee;border:.5px solid #f5b8b0;border-radius:8px;padding:10px 14px;font-size:12px;color:#c0392b;line-height:1.8}
+.checkbox-group{display:flex;align-items:center;gap:8px;padding:10px 14px;border:.5px solid #e0e0e0;border-radius:8px;background:#fff;cursor:pointer;user-select:none}
+.checkbox-group input{width:15px;height:15px;cursor:pointer;accent-color:#1a1a1a}
+.checkbox-group span{font-size:13px;color:#333}
+.stepper{display:flex;align-items:center;border:.5px solid #d0d0d0;border-radius:8px;overflow:hidden;width:fit-content}
+.stepper button{border:none;background:#f5f5f5;color:#333;font-size:18px;width:36px;height:36px;cursor:pointer;font-family:inherit;line-height:1}
+.stepper button:hover{background:#eee}
+.stepper span{font-size:15px;font-weight:600;padding:0 18px;min-width:44px;text-align:center;line-height:36px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 10px;font-weight:600;color:#888;border-bottom:.5px solid #e5e5e5;font-size:12px}
+td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:4px}
+.team-card{border:.5px solid #e0e0e0;border-radius:10px;overflow:hidden}
+.team-header{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;background:#fafafa;border-bottom:.5px solid #e8e8e8}
+.team-name{font-size:14px;font-weight:600}
+.team-body{padding:12px 14px}
+.tm-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:.5px solid #f5f5f5}
+.tm-row:last-child{border-bottom:none}
+.tm-name{font-size:13px;font-weight:500;min-width:80px;flex-shrink:0;padding-top:2px;line-height:1.4}
+.tm-pills{display:flex;flex-wrap:wrap;gap:4px}
+.tm-pill{font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;border:.5px solid}
+.cond-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;padding-top:10px;border-top:.5px dashed #eee}
+.cond-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;border:.5px solid}
+.cond-ok{background:#eefff4;border-color:#a0e0b8;color:#1a7a40}
+.cond-ng{background:#fff0ee;border-color:#f5b8b0;color:#c0392b}
+.dup-badge{font-size:10px;background:#fff8ee;border:.5px solid #f5d090;color:#9a6000;padding:1px 5px;border-radius:3px;margin-left:3px;white-space:nowrap}
+.summary-box{background:#fafafa;border:.5px solid #e5e5e5;border-radius:10px;padding:14px 18px;margin-bottom:16px}
+.summary-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:13px}
+.summary-row:last-child{margin-bottom:0}
+.summary-label{color:#888;width:140px;flex-shrink:0;font-size:12px}
+.summary-val{font-weight:600;color:#111}
+@media(max-width:640px){
+  .tab-content{padding:20px 16px}
+  .rot-courts{grid-template-columns:1fr}
+  .court-cell{border-right:none;border-bottom:.5px solid #e5e5e5}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .row2,.row3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('members',this)">👥 メンバー登録</button>
+  <button class="tab-btn" onclick="switchTab('solo',this)">ソロ審査</button>
+  <button class="tab-btn" onclick="switchTab('team',this)">チーム編成</button>
+  <button class="tab-btn" onclick="switchTab('time',this)">時間・稼働 概算</button>
+</div>
+
+<!-- ════ TAB 0: MEMBERS ════ -->
+<div id="tab-members" class="tab-content active">
+<h2>メンバー登録</h2>
+<div class="sub">ここで登録したデータが、ソロ審査・チーム編成・概算タブに自動反映されます</div>
+
+<div class="section">
+  <div class="sec-title">スキル凡例</div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap" id="m-legend"></div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">参加者</div>
+  <div style="font-size:12px;color:#999;margin-bottom:10px">スキルをクリックで ON/OFF。縄＝ターナー可能。</div>
+  <div id="m-participants-wrap"></div>
+  <div class="btn-row">
+    <button class="btn" onclick="mAddPerson('participant')">＋ 参加者を追加</button>
+    <button class="btn" onclick="mResetDefault()">サンプルに戻す</button>
+  </div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">スタッフ</div>
+  <div style="font-size:12px;color:#999;margin-bottom:10px">「審査員」をONにすると、チーム編成の候補から除外されます（ソロのターナー候補には残ります）。</div>
+  <div id="m-staff-wrap"></div>
+  <div class="btn-row">
+    <button class="btn" onclick="mAddPerson('staff')">＋ スタッフを追加</button>
+  </div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">登録サマリー</div>
+  <div id="m-summary"></div>
+</div>
+</div><!-- /tab-members -->
+
+<!-- ════ TAB 1: SOLO ════ -->
+<div id="tab-solo" class="tab-content">
+<h2>ソロ審査　ローテーション自動生成</h2>
+<div class="sub">メンバー登録タブのデータを使用します</div>
+
+<div id="solo-member-warning" class="warn-box" style="margin-bottom:20px;display:none">
+  ⚠️ メンバーが登録されていません。先に「メンバー登録」タブで参加者を登録してください。
+</div>
+
+<div class="section">
+  <div class="sec-title">登録メンバー確認</div>
+  <div id="solo-member-summary" class="summary-box"></div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">ベーシック ローテーション設定</div>
+  <div style="margin-bottom:12px;font-size:12px;color:#888">ベーシックは<strong style="color:#333">単独・全ベーシックジャンパー同時</strong>で実施。</div>
+  <div class="row2">
+    <div class="field">
+      <label>試技回数</label>
+      <select id="s-basicRots" style="width:100%;margin-top:4px">
+        <option value="1" selected>1回</option>
+        <option value="2">2回</option>
+        <option value="3">3回</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>ターナー担当</label>
+      <select id="s-basicTurnerMode" style="width:100%;margin-top:4px" onchange="renderBasicTurnerFields()">
+        <option value="auto">縄エントリー者から自動選出</option>
+        <option value="staff">運営スタッフが担当</option>
+      </select>
+    </div>
+  </div>
+  <div id="s-basicStaffNames" style="display:none;margin-top:8px">
+    <div class="row2">
+      <div class="field"><label>運営ターナー①</label><input type="text" id="basicStaff1" placeholder="例: スタッフ山田" style="width:100%"></div>
+      <div class="field"><label>運営ターナー②</label><input type="text" id="basicStaff2" placeholder="例: スタッフ鈴木" style="width:100%"></div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">通常ローテーション設定</div>
+  <div class="row2">
+    <div class="field">
+      <label>各ジャンパーの目標試技回数（ベーシック除く）</label>
+      <select id="s-targetRots" style="width:100%;margin-top:4px">
+        <option value="2">各2回</option>
+        <option value="3" selected>各3回</option>
+        <option value="4">各4回</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>追加運営ターナー人数（0〜4名）</label>
+      <div class="stepper" style="margin-top:4px">
+        <button onclick="sChangeStaff(-1)">−</button>
+        <span id="s-staffCount">0</span>
+        <button onclick="sChangeStaff(1)">＋</button>
+      </div>
+    </div>
+  </div>
+  <div id="s-staffNamesWrap"></div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">審査員設定</div>
+  <div class="field">
+    <label style="display:block;margin-bottom:8px">ロープ審査員（全ローテーション固定・2名）</label>
+    <div class="row2">
+      <input type="text" id="ropeJ1" placeholder="ロープ審査員①" style="width:100%">
+      <input type="text" id="ropeJ2" placeholder="ロープ審査員②" style="width:100%">
+    </div>
+  </div>
+  <div class="field">
+    <label style="display:block;margin-bottom:8px">ジャンパー審査員（スキル専任）</label>
+    <div id="s-judges-wrap"></div>
+  </div>
+</div>
+
+<div class="btn-row">
+  <button class="btn primary" onclick="sGenerate()">ローテーション表を生成</button>
+  <button class="btn" onclick="document.getElementById('s-output').innerHTML=''">クリア</button>
+</div>
+<div id="s-output" style="margin-top:28px"></div>
+</div><!-- /tab-solo -->
+
+<!-- ════ TAB 2: TEAM ════ -->
+<div id="tab-team" class="tab-content">
+<h2>チーム編成　自動生成</h2>
+<div class="sub">メンバー登録タブのデータを使用します。審査員兼任スタッフはチーム候補から除外されます。</div>
+
+<div id="team-member-warning" class="warn-box" style="margin-bottom:20px;display:none">
+  ⚠️ メンバーが登録されていません。先に「メンバー登録」タブで参加者を登録してください。
+</div>
+
+<div class="section">
+  <div class="sec-title">登録メンバー確認</div>
+  <div id="team-member-summary" class="summary-box"></div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">チーム条件（固定）</div>
+  <div class="info-box">
+    1チーム <strong>5名</strong>　／　各チームが以下を満たす必要があります（1人が複数条件を兼ねてOK）<br>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
+      <span class="cond-tag cond-ok">縄 2名以上</span>
+      <span class="cond-tag cond-ok">アクロ 1名以上</span>
+      <span class="cond-tag cond-ok">３倍 1名以上</span>
+      <span class="cond-tag cond-ok">ハリー 1名以上</span>
+      <span class="cond-tag cond-ok">ベーシック 1名以上</span>
+      <span class="cond-tag cond-ok">フロア 1名以上</span>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">編成設定</div>
+  <div class="row3">
+    <div class="field">
+      <label>作成するチーム数</label>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+        <input type="number" id="t-teamCount" value="4" min="1" max="20" style="width:72px">
+        <span style="font-size:13px;color:#888">チーム</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>目標：参加者 / スタッフ 比率</label>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+        <select id="t-ratioP" style="width:60px">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        <span style="color:#888">：</span>
+        <select id="t-ratioS" style="width:60px">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        <span style="font-size:12px;color:#999">（目標値・スキル条件優先）</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>編成モード</label>
+      <select id="t-mode" style="width:100%;margin-top:4px">
+        <option value="balanced">バランス重視（スキル分散）</option>
+        <option value="fill">条件充足優先</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="btn-row">
+  <button class="btn primary" onclick="tGenerate()">チームを編成する</button>
+  <button class="btn" onclick="document.getElementById('t-output').innerHTML=''">クリア</button>
+</div>
+<div id="t-output" style="margin-top:28px"></div>
+</div><!-- /tab-team -->
+
+<!-- ════ TAB 3: TIME ════ -->
+<div id="tab-time" class="tab-content">
+<h2>時間・稼働　概算</h2>
+<div class="sub">変数を入力すると審査全体の所要時間を自動計算します</div>
+
+<div class="warn-box" style="margin-bottom:20px">
+  📌 <strong>正確な概算のためにメンバーを先に登録してください。</strong>　メンバー未登録の場合、人数は手動入力の値で計算されます。
+</div>
+
+<div class="section">
+  <div class="sec-title">参加者・スタッフ人数</div>
+  <div id="tm-member-status" class="info-box" style="margin-bottom:12px"></div>
+  <div class="row2">
+    <div class="field"><label>参加者人数（名）※メンバー登録後は自動反映</label><input type="number" id="tm-participants" value="20" min="1" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+    <div class="field"><label>スタッフ人数（名）※メンバー登録後は自動反映</label><input type="number" id="tm-staff" value="10" min="0" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+  </div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">ソロ審査　種目別設定</div>
+  <div style="font-size:12px;color:#999;margin-bottom:14px">各種目のパフォーマンス時間・練習時間（分）を設定してください</div>
+  <table style="margin-bottom:0">
+    <thead><tr>
+      <th>種目</th><th>パフォーマンス（分/人）</th><th>練習・説明時間（分/人）</th><th>練習あり</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="tm-pill" style="background:#FAECE7;border:.5px solid #F0997B;color:#993C1D;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px">ベーシック（リズム）</span></td>
+        <td><input type="number" id="tm-p-basic" value="2.5" min="0.5" step="0.5" style="width:72px" oninput="tmCalc()"></td>
+        <td><input type="number" id="tm-w-basic" value="0" min="0" step="0.5" style="width:72px" oninput="tmCalc()"></td>
+        <td><input type="checkbox" id="tm-c-basic" onchange="tmCalc()"></td>
+      </tr>
+      <tr>
+        <td><span class="tm-pill" style="background:#FAEEDA;border:.5px solid #FAC775;color:#854F0B;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px">ハリー（倍速/ステップ）</span></td>
+        <td><input type="number" id="tm-p-harry" value="1.5" min="0.5" step="0.5" style="width:72px" oninput="tmCalc()"></td>
+        <td><input type="number" id="tm-w-harry" value="3" min="0" step="0.5" style="width:72px" oninput="tmCalc()"></td>
+        <td><input type="checkbox" id="tm-c-harry" checked onchange="tmCalc()"></td>
+      </tr>
+      <tr>
+        <td><span class="tm-pill" style="background:#E6F1FB;border:.5px solid #85B7EB;color:#185FA5;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px">３倍（スピード/マックス）</span></td>
+        <td><input type="number" id="tm-p-speed" value="1.5" min="0.5" step="0.5" style="width:72px" oninput="tmCalc()"></td>
+        <td><input type="number" id="tm-w-speed" value="3" min="0" step="0.5" style="width:72px" oninput="tmCalc()"></td>
+        <td><input type="checkbox" id="tm-c-speed" checked onchange="tmCalc()"></td>
+      </tr>
+      <tr>
+        <td><span class="tm-pill" style="background:#EAF3DE;border:.5px solid #97C459;color:#3B6D11;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px">フロア</span></td>
+        <td><input type="number" id="tm-p-floor" value="1.5" min="0.5" step="0.5" style="width:72px" oninput="tmCalc()"></td>
+        <td><input type="number" id="tm-w-floor" value="5" min="0" step="0.5" style="width:72px" oninput="tmCalc()"></td>
+        <td><input type="checkbox" id="tm-c-floor" checked onchange="tmCalc()"></td>
+      </tr>
+      <tr>
+        <td><span class="tm-pill" style="background:#EEEDFE;border:.5px solid #AFA9EC;color:#3C3489;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px">アクロ</span></td>
+        <td><input type="number" id="tm-p-acro" value="1.5" min="0.5" step="0.5" style="width:72px" oninput="tmCalc()"></td>
+        <td><input type="number" id="tm-w-acro" value="0" min="0" step="0.5" style="width:72px" oninput="tmCalc()"></td>
+        <td><input type="checkbox" id="tm-c-acro" onchange="tmCalc()"></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:12px" class="row3">
+    <div class="field"><label>ベーシック試技回数</label><input type="number" id="tm-basicRots" value="1" min="1" max="5" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+    <div class="field"><label>目標試技回数（ベーシック以外）</label><input type="number" id="tm-targetRots" value="3" min="1" max="5" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+    <div class="field"><label>ローテーション間の転換時間（分）</label><input type="number" id="tm-transfer" value="2" min="0" step="0.5" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+  </div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">チーム審査　設定</div>
+  <div style="margin-bottom:12px">
+    <label class="checkbox-group" style="display:inline-flex;width:auto">
+      <input type="checkbox" id="tm-teamEnabled" checked onchange="tmToggleTeam()">
+      <span>チーム審査を実施する</span>
+    </label>
+  </div>
+  <div id="tm-team-fields">
+    <div class="row3">
+      <div class="field"><label>チーム数</label><input type="number" id="tm-teamCount" value="4" min="1" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+      <div class="field"><label>擦り合わせ・練習時間（分・全チーム同時）</label><input type="number" id="tm-sync" value="30" min="0" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+      <div class="field"><label>パフォーマンス時間（分/チーム・1チームずつ）</label><input type="number" id="tm-perfTeam" value="5" min="1" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+    </div>
+    <div class="row2" style="margin-top:8px">
+      <div class="field"><label>チーム間転換時間（分）</label><input type="number" id="tm-teamTransfer" value="2" min="0" step="0.5" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+    </div>
+    <div style="margin-top:8px">
+      <label class="checkbox-group" style="display:inline-flex;width:auto">
+        <input type="checkbox" id="tm-retestEnabled" onchange="tmToggleRetest()">
+        <span>修正テストあり（パフォーマンス後に再練習→再発表）</span>
+      </label>
+    </div>
+    <div id="tm-retest-field" style="display:none;margin-top:8px;max-width:280px">
+      <div class="field"><label>修正テスト練習時間（分・全チーム同時）</label><input type="number" id="tm-retestPractice" value="30" min="0" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">その他</div>
+  <div class="row3">
+    <div class="field"><label>開始前説明時間（分）</label><input type="number" id="tm-intro" value="15" min="0" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+    <div class="field"><label>休憩時間（分/回）</label><input type="number" id="tm-breakTime" value="10" min="0" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+    <div class="field"><label>休憩回数</label><input type="number" id="tm-breakCount" value="2" min="0" style="width:100%;margin-top:4px" oninput="tmCalc()"></div>
+  </div>
+</div>
+
+<hr class="div">
+
+<div id="tm-result"></div>
+</div><!-- /tab-time -->
+
+</div><!-- /container -->
+
+<script>
+/* ════ SHARED ════ */
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='solo') soloSyncMembers();
+  if(name==='team') teamSyncMembers();
+  if(name==='time') tmSyncMembers();
+}
+
+const SKILLS_SOLO=['ベーシック','ハリー','３倍','フロア','アクロ'];
+const SKILLS_ALL=['ベーシック','ハリー','３倍','フロア','アクロ','縄'];
+const SC={
+  'ベーシック':{bg:'#FAECE7',bd:'#F0997B',tx:'#993C1D'},
+  'ハリー':{bg:'#FAEEDA',bd:'#FAC775',tx:'#854F0B'},
+  '３倍':{bg:'#E6F1FB',bd:'#85B7EB',tx:'#185FA5'},
+  'フロア':{bg:'#EAF3DE',bd:'#97C459',tx:'#3B6D11'},
+  'アクロ':{bg:'#EEEDFE',bd:'#AFA9EC',tx:'#3C3489'},
+  '縄':{bg:'#E1F5EE',bd:'#5DCAA5',tx:'#0F6E56'},
+};
+function ps(s){const c=SC[s]||{bg:'#F4F4F4',bd:'#DDD',tx:'#999'};return `background:${c.bg};border-color:${c.bd};color:${c.tx}`;}
+function bs(s){const c=SC[s]||{bg:'#F4F4F4',bd:'#DDD',tx:'#999'};return `background:${c.bg};border-color:${c.bd};color:${c.tx};font-size:12px;font-weight:600;padding:3px 12px;border-radius:20px;border:.5px solid`;}
+
+/* ════ TAB 0: MEMBERS ════ */
+// type: 'participant' or 'staff'
+// skills: array of skill strings
+// isJudge: boolean (staff only)
+let mPeople=[];
+
+function mDefaultPeople(){return [
+  {name:'田中',type:'participant',skills:['ベーシック'],isJudge:false},
+  {name:'鈴木',type:'participant',skills:['３倍','縄'],isJudge:false},
+  {name:'佐藤',type:'participant',skills:['ハリー','縄'],isJudge:false},
+  {name:'山田',type:'participant',skills:['フロア','アクロ'],isJudge:false},
+  {name:'伊藤',type:'participant',skills:['ベーシック','ハリー','縄'],isJudge:false},
+  {name:'渡辺',type:'participant',skills:['３倍','フロア','縄'],isJudge:false},
+  {name:'中村',type:'participant',skills:['アクロ','縄'],isJudge:false},
+  {name:'小林',type:'participant',skills:['ハリー','３倍','縄'],isJudge:false},
+  {name:'加藤',type:'participant',skills:['ベーシック','フロア'],isJudge:false},
+  {name:'スタッフA',type:'staff',skills:['縄','ベーシック'],isJudge:true},
+  {name:'スタッフB',type:'staff',skills:['縄','ハリー'],isJudge:false},
+  {name:'スタッフC',type:'staff',skills:['縄','アクロ'],isJudge:false},
+]}
+
+function mResetDefault(){mPeople=mDefaultPeople();mRenderAll();}
+
+function mRenderAll(){
+  mRenderLegend();
+  mRenderSection('participant');
+  mRenderSection('staff');
+  mRenderSummary();
+}
+
+function mRenderLegend(){
+  document.getElementById('m-legend').innerHTML=SKILLS_ALL.map(s=>`<span class="pill" style="${ps(s)}">${s}</span>`).join('')+`<span class="pill" style="background:#eeedfe;border-color:#afa9ec;color:#3C3489">審査員</span>`;
+}
+
+function mRenderSection(type){
+  const wrapId=type==='participant'?'m-participants-wrap':'m-staff-wrap';
+  const list=mPeople.map((p,i)=>({p,i})).filter(x=>x.p.type===type);
+  document.getElementById(wrapId).innerHTML=list.length===0
+    ?`<div style="font-size:13px;color:#ccc;padding:12px 0">まだ登録されていません</div>`
+    :list.map(({p,i})=>`
+    <div class="member-row">
+      <input class="name-input" value="${p.name}" placeholder="名前" oninput="mPeople[${i}].name=this.value;mRenderSummary()">
+      <div class="pills">
+        ${SKILLS_ALL.map(s=>`<span class="pill ${p.skills.includes(s)?'':'inactive'}" style="${p.skills.includes(s)?ps(s):''}" onclick="mToggleSkill(${i},'${s}')">${s}</span>`).join('')}
+        ${type==='staff'?`<span class="pill ${p.isJudge?'':'inactive'}" style="${p.isJudge?'background:#eeedfe;border-color:#afa9ec;color:#3C3489':''}" onclick="mToggleJudge(${i})">審査員</span>`:''}
+      </div>
+      <button class="del-btn" onclick="mRemovePerson(${i})">削除</button>
+    </div>`).join('');
+}
+
+function mRenderSummary(){
+  const participants=mPeople.filter(p=>p.type==='participant');
+  const staff=mPeople.filter(p=>p.type==='staff');
+  const judges=staff.filter(p=>p.isJudge);
+  const nonJudgeStaff=staff.filter(p=>!p.isJudge);
+  const skillCount={};
+  SKILLS_ALL.forEach(s=>{skillCount[s]=participants.filter(p=>p.skills.includes(s)).length;});
+
+  document.getElementById('m-summary').innerHTML=`
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat"><div class="stat-val">${participants.length}</div><div class="stat-lbl">参加者</div></div>
+      <div class="stat"><div class="stat-val">${judges.length}</div><div class="stat-lbl">審査員スタッフ</div></div>
+      <div class="stat"><div class="stat-val">${nonJudgeStaff.length}</div><div class="stat-lbl">非審査員スタッフ</div></div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="sec-title" style="margin-bottom:8px">参加者 スキル別人数</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${SKILLS_ALL.map(s=>`<div style="display:flex;align-items:center;gap:5px">
+          <span class="pill" style="${ps(s)};cursor:default">${s}</span>
+          <span style="font-weight:600;font-size:13px">${skillCount[s]}名</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function mToggleSkill(i,s){
+  const idx=mPeople[i].skills.indexOf(s);
+  if(idx>=0) mPeople[i].skills.splice(idx,1); else mPeople[i].skills.push(s);
+  mRenderAll();
+}
+function mToggleJudge(i){mPeople[i].isJudge=!mPeople[i].isJudge;mRenderAll();}
+function mRemovePerson(i){mPeople.splice(i,1);mRenderAll();}
+function mAddPerson(type){
+  mPeople.push({name:'',type,skills:[],isJudge:false});mRenderAll();
+  const wrapId=type==='participant'?'m-participants-wrap':'m-staff-wrap';
+  const inputs=document.querySelectorAll(`#${wrapId} .name-input`);
+  if(inputs.length) inputs[inputs.length-1].focus();
+}
+
+/* ════ TAB 1: SOLO ════ */
+let sJudgeMap={};
+let sStaffCount=0;
+let sStaffNames=[];
+
+function soloSyncMembers(){
+  const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim());
+  const warn=document.getElementById('solo-member-warning');
+  warn.style.display=participants.length===0?'block':'none';
+
+  // サマリー
+  const roperCount=participants.filter(p=>p.skills.includes('縄')).length;
+  document.getElementById('solo-member-summary').innerHTML=`
+    <div class="summary-row"><span class="summary-label">参加者</span><span class="summary-val">${participants.length}名</span></div>
+    <div class="summary-row"><span class="summary-label">縄エントリー（ターナー候補）</span><span class="summary-val">${roperCount}名</span></div>
+    ${SKILLS_SOLO.map(s=>{
+      const cnt=participants.filter(p=>p.skills.includes(s)).length;
+      return `<div class="summary-row"><span class="summary-label">${s} エントリー</span><span class="summary-val">${cnt}名</span></div>`;
+    }).join('')}`;
+
+  // 審査員設定を自動生成
+  if(Object.keys(sJudgeMap).length===0){
+    SKILLS_SOLO.forEach(s=>{sJudgeMap[s]='';});
+  }
+  sRenderJudges();
+}
+
+function renderBasicTurnerFields(){
+  const mode=document.getElementById('s-basicTurnerMode').value;
+  document.getElementById('s-basicStaffNames').style.display=mode==='staff'?'block':'none';
+}
+
+function sChangeStaff(d){
+  sStaffCount=Math.max(0,Math.min(4,sStaffCount+d));
+  document.getElementById('s-staffCount').textContent=sStaffCount;
+  sRenderStaffUI();
+}
+
+function sRenderStaffUI(){
+  const wrap=document.getElementById('s-staffNamesWrap');
+  if(sStaffCount===0){wrap.innerHTML='';return;}
+  while(sStaffNames.length<sStaffCount) sStaffNames.push('');
+  sStaffNames=sStaffNames.slice(0,sStaffCount);
+  wrap.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:10px">
+    ${sStaffNames.map((n,i)=>`<div class="field"><label>追加ターナー${i+1}</label>
+      <input type="text" value="${n}" oninput="sStaffNames[${i}]=this.value" placeholder="スタッフ名" style="width:100%;margin-top:4px"></div>`).join('')}
+  </div>`;
+}
+
+function sRenderJudges(){
+  document.getElementById('s-judges-wrap').innerHTML=SKILLS_SOLO.map(s=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <span class="pill" style="${ps(s)};font-size:11px;width:110px;text-align:center;flex-shrink:0;cursor:default">${s}</span>
+      <input type="text" value="${sJudgeMap[s]||''}" oninput="sJudgeMap['${s}']=this.value" placeholder="審査員名" style="max-width:220px;width:100%">
+    </div>`).join('');
+}
+
+function sGetStaffPool(){
+  const pool=[];
+  for(let i=0;i<sStaffCount;i++) pool.push(sStaffNames[i]&&sStaffNames[i].trim()?sStaffNames[i].trim():`追加ターナー${i+1}`);
+  return pool;
+}
+
+function sIsStaff(n){return !new Set(mPeople.filter(p=>p.type==='participant').map(p=>p.name.trim())).has(n);}
+
+function sGenerate(){
+  const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim());
+  if(participants.length===0){
+    document.getElementById('s-output').innerHTML=`<div class="warn-box">参加者が登録されていません。「メンバー登録」タブで登録してください。</div>`;return;
+  }
+  const rJ1=document.getElementById('ropeJ1').value.trim()||'縄審査員①';
+  const rJ2=document.getElementById('ropeJ2').value.trim()||'縄審査員②';
+  const target=parseInt(document.getElementById('s-targetRots').value);
+  const basicRots=parseInt(document.getElementById('s-basicRots').value);
+  const turnerMode=document.getElementById('s-basicTurnerMode').value;
+  const basicStaff1=document.getElementById('basicStaff1').value.trim()||'運営ターナー①';
+  const basicStaff2=document.getElementById('basicStaff2').value.trim()||'運営ターナー②';
+  const staffPool=sGetStaffPool();
+
+  const names=participants.map(m=>m.name.trim());
+  if(new Set(names).size<names.length){
+    document.getElementById('s-output').innerHTML=`<div class="warn-box">参加者名が重複しています。</div>`;return;
+  }
+
+  const rots=[];
+
+  // ベーシック
+  const basicJumpers=participants.filter(m=>m.skills.includes('ベーシック'));
+  if(basicJumpers.length>0){
+    let turners;
+    if(turnerMode==='staff'){turners=[basicStaff1,basicStaff2];}
+    else{
+      const ropers=participants.filter(m=>m.skills.includes('縄')&&!m.skills.includes('ベーシック'));
+      const fallback=participants.filter(m=>m.skills.includes('縄'));
+      const pool=ropers.length>=2?ropers:fallback;
+      turners=pool.length>=2?[pool[0].name.trim(),pool[1].name.trim()]:['運営①','運営②'];
+    }
+    for(let r=0;r<basicRots;r++){
+      rots.push({type:'basic',jumpers:basicJumpers.map(m=>m.name.trim()),turners,judgeJ:sJudgeMap['ベーシック']||'ベーシック審査員',rJ1,rJ2});
+    }
+  }
+
+  // 通常ローテーション
+  const normalSkills=SKILLS_SOLO.filter(s=>s!=='ベーシック'&&participants.some(m=>m.skills.includes(s)));
+  if(normalSkills.length>=2){
+    const jCount={};
+    participants.forEach(m=>{if(m.name.trim()) jCount[m.name.trim()]=0;});
+    const tHist={};
+    const ropePool=participants.filter(m=>m.skills.includes('縄'));
+    const allTP=[...ropePool.map(m=>({name:m.name.trim()})),...staffPool.map(n=>({name:n}))];
+    let iter=0;
+    while(iter<600){
+      iter++;
+      const rem=participants.filter(m=>m.name.trim()&&m.skills.some(s=>normalSkills.includes(s))&&jCount[m.name.trim()]<target);
+      if(!rem.length) break;
+      const sA=sPickSkill(normalSkills,jCount,target,null,participants);if(!sA) break;
+      const sB=sPickSkill(normalSkills,jCount,target,sA,participants);if(!sB) break;
+      const jAOpts=participants.filter(m=>m.name.trim()&&m.skills.includes(sA)&&jCount[m.name.trim()]<target);
+      const jBOpts=participants.filter(m=>m.name.trim()&&m.skills.includes(sB)&&jCount[m.name.trim()]<target);
+      if(!jAOpts.length||!jBOpts.length) break;
+      const jA=jAOpts[0];
+      const jB=jBOpts.find(m=>m.name.trim()!==jA.name.trim())||jBOpts[0];
+      if(!jB||jB.name.trim()===jA.name.trim()) break;
+      const tA=sPickPair(allTP,[jA.name.trim(),jB.name.trim()],jA.name.trim(),tHist,[]);
+      const usedInA=tA||[];
+      const tB=sPickPair(allTP,[jA.name.trim(),jB.name.trim(),...usedInA],jB.name.trim(),tHist,usedInA);
+      jCount[jA.name.trim()]++;jCount[jB.name.trim()]++;
+      sRecordPair(tHist,jA.name.trim(),tA||[]);sRecordPair(tHist,jB.name.trim(),tB||[]);
+      rots.push({type:'normal',courtA:{skill:sA,jumper:jA.name.trim(),turners:tA||['運営①','運営②'],judgeJ:sJudgeMap[sA]||sA+'審査員'},courtB:{skill:sB,jumper:jB.name.trim(),turners:tB||['運営③','運営④'],judgeJ:sJudgeMap[sB]||sB+'審査員'},rJ1,rJ2});
+    }
+  }
+
+  if(!rots.length){document.getElementById('s-output').innerHTML=`<div class="warn-box">ローテーションを生成できませんでした。エントリー内容を確認してください。</div>`;return;}
+  sRenderOutput(rots,participants);
+}
+
+function sPickSkill(skills,jc,target,exclude,members){
+  const el=skills.filter(s=>s!==exclude&&members.some(m=>m.name.trim()&&m.skills.includes(s)&&jc[m.name.trim()]<target));
+  if(!el.length){const fb=skills.filter(s=>s!==exclude);return fb.length?fb[0]:null;}
+  el.sort((a,b)=>members.filter(m=>m.name.trim()&&m.skills.includes(a)&&jc[m.name.trim()]<target).length-members.filter(m=>m.name.trim()&&m.skills.includes(b)&&jc[m.name.trim()]<target).length);
+  return el[0];
+}
+function sPickPair(pool,exJ,jName,hist,exN){
+  const avail=pool.filter(p=>!exJ.includes(p.name)&&!exN.includes(p.name));
+  if(avail.length<2) return null;
+  const h=hist[jName]||new Set();
+  const key=(a,b)=>[a,b].sort().join('||');
+  for(let i=0;i<avail.length;i++) for(let j=i+1;j<avail.length;j++) if(!h.has(key(avail[i].name,avail[j].name))) return [avail[i].name,avail[j].name];
+  return [avail[0].name,avail[1].name];
+}
+function sRecordPair(hist,jName,pair){if(!hist[jName]) hist[jName]=new Set();if(pair.length>=2) hist[jName].add([...pair].sort().join('||'));}
+
+function sRenderOutput(rots,participants){
+  const stats={};
+  participants.forEach(m=>{if(m.name.trim()) stats[m.name.trim()]={j:0,t:0};});
+  const totalSets=rots.reduce((s,r)=>s+(r.type==='basic'?1:2),0);
+  const normalCount=rots.filter(r=>r.type==='normal').length;
+  let html=`<div class="section"><div class="sec-title">生成結果サマリー</div>
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-val">${rots.length}</div><div class="stat-lbl">総ローテーション数</div></div>
+    <div class="stat"><div class="stat-val">${totalSets}</div><div class="stat-lbl">総試技セット数</div></div>
+    <div class="stat"><div class="stat-val">${rots.filter(r=>r.type==='basic').length}</div><div class="stat-lbl">ベーシック回数</div></div>
+    <div class="stat"><div class="stat-val">${normalCount}</div><div class="stat-lbl">通常ローテーション数</div></div>
+  </div></div><div class="section"><div class="sec-title">ローテーション表</div>`;
+  rots.forEach((r,i)=>{
+    const num=String(i+1).padStart(2,'0');
+    if(r.type==='basic'){
+      r.jumpers.forEach(n=>{if(stats[n]) stats[n].j++;});
+      r.turners.forEach(t=>{if(stats[t]) stats[t].t++;});
+      html+=`<div class="rot-card"><div class="rot-header">
+        <span class="rot-num">Rot. ${num}</span>
+        <span class="skill-badge" style="${bs('ベーシック')}">ベーシック（リズム）</span>
+        <span style="font-size:11px;color:#999">単独 · 全ベーシックジャンパー同時</span>
+      </div><div style="padding:12px 16px">
+        <div class="court-row" style="margin-bottom:8px"><span class="role-tag">ジャンパー</span><div style="display:flex;gap:5px;flex-wrap:wrap">${r.jumpers.map(n=>`<span class="chip jumper">${n}</span>`).join('')}</div></div>
+        <div class="court-row" style="margin-bottom:8px"><span class="role-tag">ターナー</span>${r.turners.map(t=>`<span class="chip ${sIsStaff(t)?'staff':'turner'}">${t}</span>`).join('')}</div>
+        <div class="judge-sep">
+          <div class="court-row" style="margin-bottom:5px"><span class="role-tag" style="font-size:11px">J審査員</span><span class="chip judge-j">${r.judgeJ}</span></div>
+          <div class="court-row"><span class="role-tag" style="font-size:11px">R審査員</span><span class="chip judge-r">${r.rJ1}</span><span class="chip judge-r">${r.rJ2}</span></div>
+        </div>
+      </div></div>`;
+    } else {
+      [r.courtA,r.courtB].forEach(c=>{if(stats[c.jumper]) stats[c.jumper].j++;c.turners.forEach(t=>{if(stats[t]) stats[t].t++;});});
+      html+=`<div class="rot-card"><div class="rot-header">
+        <span class="rot-num">Rot. ${num}</span>
+        <span style="font-size:12px;color:#999">2コート同時進行</span>
+      </div><div class="rot-courts">
+        ${['courtA','courtB'].map((ck,ci)=>{const c=r[ck];return `<div class="court-cell">
+          <div class="court-label">COURT ${ci===0?'A':'B'}</div>
+          <div class="court-row"><span class="role-tag">スキル</span><span class="skill-badge" style="${bs(c.skill)}">${c.skill}</span></div>
+          <div class="court-row"><span class="role-tag">ジャンパー</span><span class="chip jumper">${c.jumper}</span></div>
+          <div class="court-row"><span class="role-tag">ターナー</span>${c.turners.map(t=>`<span class="chip ${sIsStaff(t)?'staff':'turner'}">${t}</span>`).join('')}</div>
+          <div class="judge-sep">
+            <div class="court-row" style="margin-bottom:4px"><span class="role-tag" style="font-size:11px">J審査員</span><span class="chip judge-j">${c.judgeJ}</span></div>
+            <div class="court-row"><span class="role-tag" style="font-size:11px">R審査員</span><span class="chip judge-r">${ci===0?r.rJ1:r.rJ2}</span></div>
+          </div>
+        </div>`;}).join('')}
+      </div></div>`;
+    }
+  });
+  html+=`</div><div class="section"><div class="sec-title">参加者別集計</div>
+  <table><thead><tr>
+    <th>参加者</th><th>エントリースキル</th>
+    <th style="text-align:center">試技回数</th><th style="text-align:center">ターナー回数</th><th style="text-align:center">縄</th>
+  </tr></thead><tbody>
+  ${participants.filter(m=>m.name.trim()).map(m=>`<tr>
+    <td style="font-weight:600">${m.name.trim()}</td>
+    <td><div style="display:flex;gap:4px;flex-wrap:wrap">${m.skills.filter(s=>s!=='縄').map(s=>`<span class="pill" style="${ps(s)};font-size:11px;padding:1px 8px;cursor:default">${s}</span>`).join('')||'<span style="color:#ccc;font-size:12px">未設定</span>'}</div></td>
+    <td style="text-align:center;font-weight:600">${stats[m.name.trim()]?.j||0}</td>
+    <td style="text-align:center;color:#999">${stats[m.name.trim()]?.t||0}</td>
+    <td style="text-align:center">${m.skills.includes('縄')?`<span style="${ps('縄')};font-size:11px;padding:1px 8px;border-radius:20px;border:.5px solid;cursor:default">✓</span>`:'—'}</td>
+  </tr>`).join('')}
+  </tbody></table></div>`;
+  document.getElementById('s-output').innerHTML=html;
+  document.getElementById('s-output').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ════ TAB 2: TEAM ════ */
+const T_CONDITIONS=[
+  {skill:'縄',count:2},{skill:'アクロ',count:1},{skill:'３倍',count:1},
+  {skill:'ハリー',count:1},{skill:'ベーシック',count:1},{skill:'フロア',count:1},
+];
+
+function teamSyncMembers(){
+  const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim());
+  const nonJudgeStaff=mPeople.filter(p=>p.type==='staff'&&!p.isJudge&&p.name.trim());
+  const warn=document.getElementById('team-member-warning');
+  warn.style.display=participants.length===0?'block':'none';
+  document.getElementById('team-member-summary').innerHTML=`
+    <div class="summary-row"><span class="summary-label">参加者（チーム候補）</span><span class="summary-val">${participants.length}名</span></div>
+    <div class="summary-row"><span class="summary-label">非審査員スタッフ（チーム候補）</span><span class="summary-val">${nonJudgeStaff.length}名</span></div>
+    <div class="summary-row"><span class="summary-label">審査員スタッフ（除外）</span><span class="summary-val">${mPeople.filter(p=>p.type==='staff'&&p.isJudge).length}名</span></div>`;
+}
+
+function tCheckConditions(team){
+  return T_CONDITIONS.map(c=>({
+    skill:c.skill,required:c.count,
+    actual:team.filter(p=>p.skills.includes(c.skill)).length,
+    ok:team.filter(p=>p.skills.includes(c.skill)).length>=c.count
+  }));
+}
+function tTeamScore(team){
+  const conds=tCheckConditions(team);
+  const allOk=conds.every(c=>c.ok)?1000:0;
+  const uniq=new Set(team.flatMap(p=>p.skills)).size;
+  const multi=team.filter(p=>p.skills.length>=2).length;
+  return allOk+uniq*3+multi*2;
+}
+
+function tGenerate(){
+  const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim()&&p.skills.length>0);
+  const nonJudgeStaff=mPeople.filter(p=>p.type==='staff'&&!p.isJudge&&p.name.trim()&&p.skills.length>0);
+  const pool=[...participants,...nonJudgeStaff];
+
+  if(participants.length===0){
+    document.getElementById('t-output').innerHTML=`<div class="warn-box">参加者が登録されていません。「メンバー登録」タブで登録してください。</div>`;return;
+  }
+
+  const numTeams=parseInt(document.getElementById('t-teamCount').value)||1;
+  const ratioP=parseInt(document.getElementById('t-ratioP').value)||2;
+  const ratioS=parseInt(document.getElementById('t-ratioS').value)||3;
+  const mode=document.getElementById('t-mode').value;
+  const targetP=Math.round(5*ratioP/(ratioP+ratioS));
+  const targetS=5-targetP;
+
+  const names=pool.map(p=>p.name.trim());
+  if(new Set(names).size<names.length){
+    document.getElementById('t-output').innerHTML=`<div class="warn-box">名前が重複しています。</div>`;return;
+  }
+
+  let best=null,bestScore=-1;
+  for(let trial=0;trial<800;trial++){
+    const result=tTryAssign(pool,participants,nonJudgeStaff,numTeams,targetP,targetS,mode);
+    if(result){
+      const teamSc=result.reduce((s,t)=>s+tTeamScore(t),0);
+      const dupPenalty=tDupPenalty(result);
+      const total=teamSc-dupPenalty;
+      if(total>bestScore){bestScore=total;best=result;}
+    }
+  }
+
+  if(!best){
+    document.getElementById('t-output').innerHTML=`<div class="err-box">
+      条件を満たすチームを${numTeams}チーム編成できませんでした。<br>
+      ・比率設定（現在 参加者${targetP}:スタッフ${targetS}）を調整してみてください<br>
+      ・縄・アクロなど希少スキルの人数を確認してください
+    </div>`;return;
+  }
+  tRenderOutput(best,targetP,targetS);
+}
+
+function tDupPenalty(teams){
+  const count={};
+  teams.flat().forEach(p=>{count[p.name]=(count[p.name]||0)+1;});
+  return Object.values(count).reduce((s,c)=>s+(c-1)*60,0);
+}
+
+function tTryAssign(pool,participants,nonJudgeStaff,numTeams,targetP,targetS,mode){
+  const teams=[];
+  const pCount={};pool.forEach(p=>{pCount[p.name]=0;});
+  const maxPerPerson=2;
+
+  for(let ti=0;ti<numTeams;ti++){
+    const inThisTeam=new Set();
+    const team=[];
+
+    function avail(type,filterFn){
+      const src=type==='p'?participants:nonJudgeStaff;
+      return src.filter(p=>!inThisTeam.has(p.name)&&pCount[p.name]<maxPerPerson&&(!filterFn||filterFn(p)));
+    }
+    function availAll(filterFn){
+      return pool.filter(p=>!inThisTeam.has(p.name)&&pCount[p.name]<maxPerPerson&&(!filterFn||filterFn(p)));
+    }
+    function sorted(arr){
+      return [...arr].sort((a,b)=>{
+        const wa=a.skills.length*2+(a.skills.includes('縄')?3:0)-pCount[a.name]*20;
+        const wb=b.skills.length*2+(b.skills.includes('縄')?3:0)-pCount[b.name]*20;
+        return wb-wa+(Math.random()-.5)*5;
+      });
+    }
+
+    // 縄2名：できるだけ比率に従って参加者/スタッフから選ぶ
+    for(let n=0;n<2;n++){
+      const needP=team.filter(p=>participants.includes(p)).length<targetP;
+      const r=needP
+        ?sorted(avail('p',p=>p.skills.includes('縄')))
+        :sorted(avail('s',p=>p.skills.includes('縄')));
+      const fallback=sorted(availAll(p=>p.skills.includes('縄')));
+      const pick=(r.length?r:fallback);
+      if(!pick.length) return null;
+      team.push(pick[0]);inThisTeam.add(pick[0].name);
+    }
+
+    // 残条件を埋める
+    for(const sk of['アクロ','３倍','ハリー','ベーシック','フロア']){
+      if(team.some(p=>p.skills.includes(sk))||team.length>=5) continue;
+      const curP=team.filter(p=>participants.includes(p)).length;
+      const needP=curP<targetP;
+      const r=needP?sorted(avail('p',p=>p.skills.includes(sk))):sorted(avail('s',p=>p.skills.includes(sk)));
+      const fallback=sorted(availAll(p=>p.skills.includes(sk)));
+      const pick=r.length?r:fallback;
+      if(pick.length){team.push(pick[0]);inThisTeam.add(pick[0].name);}
+    }
+
+    // 5名に埋める
+    while(team.length<5){
+      const curP=team.filter(p=>participants.includes(p)).length;
+      const needP=curP<targetP;
+      const r=needP?sorted(avail('p')):sorted(avail('s'));
+      const fallback=sorted(availAll());
+      const pick=r.length?r:fallback;
+      if(!pick.length) return null;
+      team.push(pick[0]);inThisTeam.add(pick[0].name);
+    }
+
+    if(!tCheckConditions(team).every(c=>c.ok)) return null;
+    teams.push(team);
+    team.forEach(p=>{pCount[p.name]++;});
+  }
+  return teams;
+}
+
+function skillW(p,mode){
+  return p.skills.length*2+(p.skills.includes('縄')?4:0)+(p.skills.includes('アクロ')?3:0)+(p.skills.includes('３倍')?2:0)+(mode==='balanced'?Math.random()*4:0);
+}
+
+function tRenderOutput(teams,targetP,targetS){
+  const TCOLORS=['#1a5fb4','#1a7a40','#854F0B','#3C3489','#993C1D','#0F6E56','#c0392b','#9a6000'];
+  const participants=mPeople.filter(p=>p.type==='participant');
+  const nameCount={};
+  teams.flat().forEach(p=>{nameCount[p.name]=(nameCount[p.name]||0)+1;});
+  const dupNames=new Set(Object.entries(nameCount).filter(([,c])=>c>1).map(([n])=>n));
+  const nameToTeams={};
+  teams.forEach((team,ti)=>team.forEach(p=>{if(!nameToTeams[p.name]) nameToTeams[p.name]=[];nameToTeams[p.name].push(ti+1);}));
+  const uniqueCount=new Set(teams.flat().map(p=>p.name)).size;
+
+  let html=`<div class="section"><div class="sec-title">編成結果サマリー</div>
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-val">${teams.length}</div><div class="stat-lbl">編成チーム数</div></div>
+    <div class="stat"><div class="stat-val">${uniqueCount}</div><div class="stat-lbl">参加ユニーク人数</div></div>
+    <div class="stat"><div class="stat-val">${dupNames.size}</div><div class="stat-lbl">複数チーム参加者</div></div>
+    <div class="stat"><div class="stat-val">参${targetP}:ス${targetS}</div><div class="stat-lbl">目標比率</div></div>
+  </div>
+  ${dupNames.size>0?`<div class="info-box" style="margin-top:10px">複数チームに参加: ${[...dupNames].map(n=>`<strong>${n}</strong>（チーム${nameToTeams[n].join('・')}）`).join('、')}</div>`:`<div class="ok-box" style="margin-top:10px">全チームのメンバーに重複なし</div>`}
+  </div>`;
+
+  html+=`<div class="section"><div class="sec-title">チーム一覧</div><div class="team-grid">`;
+  teams.forEach((team,ti)=>{
+    const conds=tCheckConditions(team);
+    const allOk=conds.every(c=>c.ok);
+    const col=TCOLORS[ti%TCOLORS.length];
+    const pCnt=team.filter(p=>participants.find(pp=>pp.name===p.name)).length;
+    const sCnt=5-pCnt;
+    html+=`<div class="team-card"><div class="team-header" style="border-top:3px solid ${col}">
+      <span class="team-name">チーム ${ti+1}</span>
+      <span style="font-size:11px;color:#888">参${pCnt}:ス${sCnt}</span>
+      <span style="font-size:11px;font-weight:600;color:${allOk?'#1a7a40':'#c0392b'}">${allOk?'✓ 条件充足':'✗ 条件不足'}</span>
+    </div><div class="team-body">
+      ${team.map(p=>{
+        const isParticipant=!!participants.find(pp=>pp.name===p.name);
+        const isDup=dupNames.has(p.name);
+        const others=nameToTeams[p.name].filter(n=>n!==ti+1);
+        return `<div class="tm-row">
+          <span class="tm-name">
+            ${p.name}
+            <span style="font-size:10px;color:#bbb;margin-left:2px">${isParticipant?'':'運営'}</span>
+            ${isDup?`<span class="dup-badge">T${others.join('・')}</span>`:''}
+          </span>
+          <div class="tm-pills">${p.skills.map(s=>`<span class="tm-pill" style="${ps(s)}">${s}</span>`).join('')}</div>
+        </div>`;
+      }).join('')}
+      <div class="cond-row">${conds.map(c=>`<span class="cond-tag ${c.ok?'cond-ok':'cond-ng'}">${c.skill} ${c.actual}/${c.required}</span>`).join('')}</div>
+    </div></div>`;
+  });
+  html+=`</div></div>`;
+  document.getElementById('t-output').innerHTML=html;
+  document.getElementById('t-output').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ════ TAB 3: TIME ════ */
+function tmToggleTeam(){
+  const on=document.getElementById('tm-teamEnabled').checked;
+  document.getElementById('tm-team-fields').style.display=on?'block':'none';
+  tmCalc();
+}
+function tmToggleRetest(){
+  document.getElementById('tm-retest-field').style.display=document.getElementById('tm-retestEnabled').checked?'block':'none';
+  tmCalc();
+}
+
+function tmSyncMembers(){
+  const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim());
+  const staff=mPeople.filter(p=>p.type==='staff'&&p.name.trim());
+  if(participants.length>0){
+    document.getElementById('tm-participants').value=participants.length;
+    document.getElementById('tm-staff').value=staff.length;
+  }
+  document.getElementById('tm-member-status').innerHTML=participants.length>0
+    ?`✅ メンバー登録済み：参加者 <strong>${participants.length}名</strong>、スタッフ <strong>${staff.length}名</strong>　（自動反映済み）`
+    :`⚠️ メンバー未登録。手動入力の値で概算します。`;
+  tmCalc();
+}
+
+function tmV(id){return parseFloat(document.getElementById(id).value)||0;}
+function tmI(id){return parseInt(document.getElementById(id).value)||0;}
+function tmC(id){return document.getElementById(id).checked;}
+
+function tmCalc(){
+  const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim());
+  const pCount=participants.length>0?participants.length:tmI('tm-participants');
+
+  const basicRots=tmI('tm-basicRots');
+  const targetRots=tmI('tm-targetRots');
+  const transfer=tmV('tm-transfer');
+  const intro=tmV('tm-intro');
+  const breakTime=tmV('tm-breakTime');
+  const breakCount=tmI('tm-breakCount');
+
+  // スキル別人数（登録済みなら実データ、未登録なら均等分割）
+  const skillCounts={};
+  const skills=[
+    {id:'basic',key:'ベーシック',label:'ベーシック（リズム）',color:'#993C1D',bg:'#FAECE7',bd:'#F0997B'},
+    {id:'harry',key:'ハリー',label:'ハリー（倍速/ステップ）',color:'#854F0B',bg:'#FAEEDA',bd:'#FAC775'},
+    {id:'speed',key:'３倍',label:'３倍（スピード/マックス）',color:'#185FA5',bg:'#E6F1FB',bd:'#85B7EB'},
+    {id:'floor',key:'フロア',label:'フロア',color:'#3B6D11',bg:'#EAF3DE',bd:'#97C459'},
+    {id:'acro',key:'アクロ',label:'アクロ',color:'#3C3489',bg:'#EEEDFE',bd:'#AFA9EC'},
+  ];
+  skills.forEach(sk=>{
+    skillCounts[sk.id]=participants.length>0
+      ?participants.filter(p=>p.skills.includes(sk.key)).length
+      :Math.ceil(pCount/5);
+  });
+
+  let soloMins=0;
+  let soloBreakdown=[];
+
+  // ベーシック（全員同時・basicRots回）
+  const pBasic=tmV('tm-p-basic');
+  const wBasic=tmC('tm-c-basic')?tmV('tm-w-basic'):0;
+  const basicTotal=basicRots*((wBasic+pBasic)+transfer);
+  soloMins+=basicTotal;
+  soloBreakdown.push({label:'ベーシック（リズム）',detail:`${basicRots}回 × (練習${wBasic}分 + パフォ${pBasic}分 + 転換${transfer}分)`,mins:basicTotal,color:'#993C1D',bg:'#FAECE7',bd:'#F0997B',count:skillCounts['basic']});
+
+  // 通常種目（2コート同時→実時間は÷2）
+  skills.slice(1).forEach(sk=>{
+    const p=tmV(`tm-p-${sk.id}`);
+    const w=tmC(`tm-c-${sk.id}`)?tmV(`tm-w-${sk.id}`):0;
+    const cnt=skillCounts[sk.id];
+    const rots=cnt*targetRots;
+    const rawMins=rots*((w+p)+transfer);
+    soloMins+=rawMins;
+    soloBreakdown.push({label:sk.label,detail:`${cnt}人 × ${targetRots}回 × (練習${w}分 + パフォ${p}分 + 転換${transfer}分)`,mins:rawMins,color:sk.color,bg:sk.bg,bd:sk.bd,count:cnt});
+  });
+
+  // 2コート同時進行なので通常ローテは÷2
+  const soloNormalMins=(soloMins-basicTotal)/2;
+  const soloTotalMins=basicTotal+soloNormalMins;
+
+  // チーム審査
+  let teamMins=0;
+  let teamBreakdown=[];
+  const teamEnabled=tmC('tm-teamEnabled');
+  if(teamEnabled){
+    const teamCount=tmI('tm-teamCount');
+    const sync=tmV('tm-sync');
+    const perfTeam=tmV('tm-perfTeam');
+    const teamTransfer=tmV('tm-teamTransfer');
+    const retestEnabled=tmC('tm-retestEnabled');
+    const retestPractice=retestEnabled?tmV('tm-retestPractice'):0;
+
+    teamMins=sync+teamCount*(perfTeam+teamTransfer);
+    teamBreakdown.push({label:'擦り合わせ・練習（全チーム同時）',detail:`固定 ${sync}分`,mins:sync});
+    teamBreakdown.push({label:`パフォーマンス × ${teamCount}チーム`,detail:`${teamCount} × (${perfTeam}分 + 転換${teamTransfer}分)`,mins:teamCount*(perfTeam+teamTransfer)});
+    if(retestEnabled){
+      teamMins+=retestPractice+teamCount*(perfTeam+teamTransfer);
+      teamBreakdown.push({label:'修正テスト練習（全チーム同時）',detail:`固定 ${retestPractice}分`,mins:retestPractice});
+      teamBreakdown.push({label:`再パフォーマンス × ${teamCount}チーム`,detail:`${teamCount} × (${perfTeam}分 + 転換${teamTransfer}分)`,mins:teamCount*(perfTeam+teamTransfer)});
+    }
+  }
+
+  const breakTotal=breakTime*breakCount;
+  const grandTotal=intro+soloTotalMins+teamMins+breakTotal;
+  const grandH=Math.floor(grandTotal/60);
+  const grandM=Math.round(grandTotal%60);
+
+  let html=`<div class="section"><div class="sec-title">概算結果</div>
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-val" style="color:${grandH>=10?'#c0392b':grandH>=8?'#9a6000':'#1a7a40'}">${grandH}時間${grandM}分</div><div class="stat-lbl">総所要時間</div></div>
+    <div class="stat"><div class="stat-val">${Math.round(soloTotalMins)}分</div><div class="stat-lbl">ソロ審査</div></div>
+    <div class="stat"><div class="stat-val">${teamEnabled?Math.round(teamMins)+'分':'—'}</div><div class="stat-lbl">チーム審査</div></div>
+    <div class="stat"><div class="stat-val">${breakTotal}分</div><div class="stat-lbl">休憩</div></div>
+  </div>
+  ${grandH>=10?`<div class="warn-box" style="margin-top:10px">⚠️ 10時間超えています。種目・試技回数・チーム数の見直しを検討してください。</div>`:grandH>=8?`<div class="warn-box" style="margin-top:10px">⚠️ 8時間を超えています。スタッフ・参加者の負荷に注意してください。</div>`:''}
+  </div>`;
+
+  html+=`<div class="section"><div class="sec-title">時間内訳</div>
+  <table><thead><tr><th>フェーズ</th><th>内容</th><th style="text-align:center">人数</th><th style="text-align:right">時間</th></tr></thead><tbody>
+  <tr><td colspan="4" style="background:#fafafa;font-weight:600;font-size:11px;color:#888;padding:6px 10px">準備</td></tr>
+  <tr><td>開始前説明</td><td style="color:#999;font-size:12px">—</td><td style="text-align:center;color:#999">—</td><td style="text-align:right;font-weight:600">${intro}分</td></tr>
+  <tr><td colspan="4" style="background:#fafafa;font-weight:600;font-size:11px;color:#888;padding:6px 10px">ソロ審査</td></tr>
+  ${soloBreakdown.map(b=>`<tr>
+    <td><span style="background:${b.bg};border:.5px solid ${b.bd};color:${b.color};font-size:11px;font-weight:600;padding:1px 8px;border-radius:20px">${b.label}</span></td>
+    <td style="color:#999;font-size:12px">${b.detail}</td>
+    <td style="text-align:center;font-size:12px;color:#555">${b.count}名</td>
+    <td style="text-align:right;font-weight:600">${Math.round(b.mins)}分</td>
+  </tr>`).join('')}
+  <tr style="border-top:.5px solid #ddd"><td colspan="2" style="font-weight:600;color:#555;font-size:12px">ソロ小計（通常ローテは2コート同時÷2）</td><td></td><td style="text-align:right;font-weight:700">${Math.round(soloTotalMins)}分</td></tr>`;
+
+  if(teamEnabled&&teamBreakdown.length){
+    html+=`<tr><td colspan="4" style="background:#fafafa;font-weight:600;font-size:11px;color:#888;padding:6px 10px">チーム審査</td></tr>
+    ${teamBreakdown.map(b=>`<tr>
+      <td>${b.label}</td><td style="color:#999;font-size:12px">${b.detail}</td><td></td>
+      <td style="text-align:right;font-weight:600">${Math.round(b.mins)}分</td>
+    </tr>`).join('')}
+    <tr style="border-top:.5px solid #ddd"><td colspan="3" style="font-weight:600;color:#555;font-size:12px">チーム小計</td><td style="text-align:right;font-weight:700">${Math.round(teamMins)}分</td></tr>`;
+  }
+
+  html+=`<tr><td colspan="4" style="background:#fafafa;font-weight:600;font-size:11px;color:#888;padding:6px 10px">休憩</td></tr>
+  <tr><td>休憩</td><td style="color:#999;font-size:12px">${breakCount}回 × ${breakTime}分</td><td></td><td style="text-align:right;font-weight:600">${breakTotal}分</td></tr>
+  <tr style="border-top:2px solid #1a1a1a"><td colspan="3" style="font-weight:700;font-size:15px">合計</td><td style="text-align:right;font-weight:700;font-size:15px">${grandH}時間${grandM}分</td></tr>
+  </tbody></table></div>`;
+
+  document.getElementById('tm-result').innerHTML=html;
+}
+
+/* ════ INIT ════ */
+mResetDefault();
+mRenderAll();
+SKILLS_SOLO.forEach(s=>{sJudgeMap[s]='';});
+sRenderJudges();
+sRenderStaffUI();
+tmCalc();
+</script>
+</body>
+</html>
