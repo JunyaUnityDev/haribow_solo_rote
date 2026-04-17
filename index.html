@@ -23,6 +23,10 @@ hr.div{border:none;border-top:.5px solid #e8e8e8;margin:22px 0}
 .btn:hover{background:#f5f5f5}
 .btn.primary{background:#1a1a1a;border-color:#1a1a1a;color:#fff;font-weight:500}
 .btn.primary:hover{background:#333}
+.btn.success{background:#0f7b6c;border-color:#0f7b6c;color:#fff;font-weight:500}
+.btn.success:hover{background:#0a5e52}
+.btn.warning{background:#d9730d;border-color:#d9730d;color:#fff;font-weight:500}
+.btn.warning:hover{background:#b85e09}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
@@ -92,12 +96,58 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
 .cond-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;border:.5px solid}
 .cond-ok{background:#eefff4;border-color:#a0e0b8;color:#1a7a40}
 .cond-ng{background:#fff0ee;border-color:#f5b8b0;color:#c0392b}
-.dup-badge{font-size:10px;background:#fff8ee;border:.5px solid #f5d090;color:#9a6000;padding:1px 5px;border-radius:3px;margin-left:3px;white-space:nowrap}
 .summary-box{background:#fafafa;border:.5px solid #e5e5e5;border-radius:10px;padding:14px 18px;margin-bottom:16px}
 .summary-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:13px}
 .summary-row:last-child{margin-bottom:0}
 .summary-label{color:#888;width:140px;flex-shrink:0;font-size:12px}
 .summary-val{font-weight:600;color:#111}
+
+/* ══ 編集モード ══ */
+.edit-panel{background:#fff8ee;border:.5px solid #f5d090;border-radius:10px;padding:16px 18px;margin-bottom:20px}
+.edit-panel-title{font-size:13px;font-weight:600;color:#9a6000;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.edit-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.edit-input{font-size:13px;padding:5px 10px;border-radius:7px;border:.5px solid #f5d090;background:#fff;color:#111;font-family:inherit;outline:none;width:160px}
+.edit-input:focus{border-color:#d9730d}
+
+/* ══ CSV出力パネル ══ */
+.csv-panel{background:#eefff4;border:.5px solid #a0e0b8;border-radius:10px;padding:16px 18px;margin-bottom:20px}
+.csv-panel-title{font-size:13px;font-weight:600;color:#0f7b6c;margin-bottom:4px}
+.csv-panel-sub{font-size:12px;color:#1a7a40;margin-bottom:12px}
+.csv-btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ══ チェックリスト ══ */
+.checklist-panel{background:#fff;border:1.5px solid #1a1a1a;border-radius:10px;padding:18px 20px;margin-bottom:24px}
+.checklist-title{font-size:14px;font-weight:700;color:#111;margin-bottom:4px}
+.checklist-sub{font-size:12px;color:#888;margin-bottom:14px}
+.checklist-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:.5px solid #f0f0f0;cursor:pointer}
+.checklist-item:last-child{border-bottom:none}
+.checklist-item input[type=checkbox]{width:16px;height:16px;margin-top:1px;accent-color:#1a1a1a;cursor:pointer;flex-shrink:0}
+.checklist-item-text{font-size:13px;color:#333;line-height:1.5}
+.checklist-item-text.done{text-decoration:line-through;color:#aaa}
+.checklist-item-sub{font-size:11px;color:#999;margin-top:2px}
+.checklist-progress{margin-top:12px;display:flex;align-items:center;gap:10px}
+.progress-bar{flex:1;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:#1a1a1a;border-radius:3px;transition:width .3s}
+.progress-text{font-size:12px;font-weight:600;color:#555;white-space:nowrap}
+.checklist-all-ok{background:#eefff4;border:.5px solid #a0e0b8;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;color:#0f7b6c;margin-top:10px;display:none;text-align:center}
+
+/* ══ トースト ══ */
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;z-index:9999}
+.toast.show{opacity:1;transform:none}
+
+/* ══ モーダル ══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:12px;padding:28px 32px;max-width:480px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.modal-sub{font-size:13px;color:#888;margin-bottom:20px;line-height:1.6}
+.modal-btn-row{display:flex;gap:8px;justify-content:flex-end}
+
+/* ══ 編集可能セル ══ */
+.editable-cell{cursor:pointer;border-radius:4px;padding:1px 4px;transition:background .1s}
+.editable-cell:hover{background:#fff8ee}
+.editable-cell:focus{background:#fff8ee;outline:2px solid #f5d090;border-radius:4px}
+
 @media(max-width:640px){
   .tab-content{padding:20px 16px}
   .rot-courts{grid-template-columns:1fr}
@@ -115,6 +165,7 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
   <button class="tab-btn" onclick="switchTab('solo',this)">ソロ審査</button>
   <button class="tab-btn" onclick="switchTab('team',this)">チーム編成</button>
   <button class="tab-btn" onclick="switchTab('time',this)">時間・稼働 概算</button>
+  <button class="tab-btn" onclick="switchTab('export',this)">📤 CSV出力</button>
 </div>
 
 <!-- ════ TAB 0: MEMBERS ════ -->
@@ -167,7 +218,7 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
   <div class="sec-title">登録サマリー</div>
   <div id="m-summary"></div>
 </div>
-</div><!-- /tab-members -->
+</div>
 
 <!-- ════ TAB 1: SOLO ════ -->
 <div id="tab-solo" class="tab-content">
@@ -269,7 +320,7 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
   <button class="btn" onclick="document.getElementById('s-output').innerHTML=''">クリア</button>
 </div>
 <div id="s-output" style="margin-top:28px"></div>
-</div><!-- /tab-solo -->
+</div>
 
 <!-- ════ TAB 2: TEAM ════ -->
 <div id="tab-team" class="tab-content">
@@ -350,7 +401,7 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
   <button class="btn" onclick="document.getElementById('t-output').innerHTML=''">クリア</button>
 </div>
 <div id="t-output" style="margin-top:28px"></div>
-</div><!-- /tab-team -->
+</div>
 
 <!-- ════ TAB 3: TIME ════ -->
 <div id="tab-time" class="tab-content">
@@ -464,12 +515,146 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
 <hr class="div">
 
 <div id="tm-result"></div>
-</div><!-- /tab-time -->
+</div>
+
+<!-- ════ TAB 4: CSV出力 ════ -->
+<div id="tab-export" class="tab-content">
+<h2>📤 CSV出力 &amp; チェックリスト</h2>
+<div class="sub">ローテーション生成・チーム編成が完了したら、このタブでスプシへの出力と最終確認を行います</div>
+
+<!-- チェックリスト -->
+<div class="checklist-panel">
+  <div class="checklist-title">✅ 出力前チェックリスト</div>
+  <div class="checklist-sub">全項目にチェックを入れてからCSV出力してください</div>
+
+  <div class="checklist-item" onclick="toggleCheck(0)">
+    <input type="checkbox" id="chk0">
+    <div>
+      <div class="checklist-item-text" id="chk0-text">審査員が全員登録されているか</div>
+      <div class="checklist-item-sub">まきと・おち（縄）が審査員タブに登録されていること</div>
+    </div>
+  </div>
+  <div class="checklist-item" onclick="toggleCheck(1)">
+    <input type="checkbox" id="chk1">
+    <div>
+      <div class="checklist-item-text" id="chk1-text">参加者のスキルが正しく登録されているか</div>
+      <div class="checklist-item-sub">縄・ベーシック・ハリー・３倍・フロア・アクロの入力に漏れがないこと</div>
+    </div>
+  </div>
+  <div class="checklist-item" onclick="toggleCheck(2)">
+    <input type="checkbox" id="chk2">
+    <div>
+      <div class="checklist-item-text" id="chk2-text">冬案件スタッフ5名がスタッフ枠に登録されているか</div>
+      <div class="checklist-item-sub">チーム審査に追加するスタッフが全員入力されていること</div>
+    </div>
+  </div>
+  <div class="checklist-item" onclick="toggleCheck(3)">
+    <input type="checkbox" id="chk3">
+    <div>
+      <div class="checklist-item-text" id="chk3-text">ソロ審査ローテーションを生成済みか</div>
+      <div class="checklist-item-sub">「ソロ審査」タブで「ローテーション表を生成」ボタンを押していること</div>
+    </div>
+  </div>
+  <div class="checklist-item" onclick="toggleCheck(4)">
+    <input type="checkbox" id="chk4">
+    <div>
+      <div class="checklist-item-text" id="chk4-text">チーム編成を生成済みか</div>
+      <div class="checklist-item-sub">「チーム編成」タブで「チームを編成する」ボタンを押していること</div>
+    </div>
+  </div>
+  <div class="checklist-item" onclick="toggleCheck(5)">
+    <input type="checkbox" id="chk5">
+    <div>
+      <div class="checklist-item-text" id="chk5-text">会議でメンバー交換・編集が完了しているか</div>
+      <div class="checklist-item-sub">確定版として全員が合意していること</div>
+    </div>
+  </div>
+
+  <div class="checklist-progress">
+    <div class="progress-bar"><div class="progress-fill" id="chkProgress" style="width:0%"></div></div>
+    <div class="progress-text" id="chkCount">0 / 6</div>
+  </div>
+  <div class="checklist-all-ok" id="chkAllOk">🎉 全項目チェック完了！CSV出力できます</div>
+</div>
+
+<!-- CSV出力パネル -->
+<div class="csv-panel">
+  <div class="csv-panel-title">📋 スプシへの出力手順</div>
+  <div class="csv-panel-sub">各ボタンを押してコピー → スプシの対応シートに貼り付け（Ctrl+V / Cmd+V）</div>
+  <div class="csv-btn-row">
+    <button class="btn success" onclick="exportRotationCSV()">🔄 ローテーションCSVをコピー</button>
+    <button class="btn success" onclick="exportTeamCSV()">👥 チームCSVをコピー</button>
+    <button class="btn success" onclick="exportTimetableCSV()">🕐 タイムテーブルCSVをコピー</button>
+  </div>
+</div>
+
+<!-- 貼り付け後チェック -->
+<div class="checklist-panel" style="border-color:#0f7b6c">
+  <div class="checklist-title" style="color:#0f7b6c">📌 貼り付け後チェック</div>
+  <div class="checklist-sub">スプシへの貼り付けが完了したら確認してください</div>
+
+  <div class="checklist-item" onclick="toggleCheck2(0)">
+    <input type="checkbox" id="chk2-0">
+    <div>
+      <div class="checklist-item-text" id="chk2-0-text">ローテーションシートに貼り付け完了</div>
+      <div class="checklist-item-sub">行数が正しいこと・空白行がないこと</div>
+    </div>
+  </div>
+  <div class="checklist-item" onclick="toggleCheck2(1)">
+    <input type="checkbox" id="chk2-1">
+    <div>
+      <div class="checklist-item-text" id="chk2-1-text">チームシートに貼り付け完了</div>
+      <div class="checklist-item-sub">全チームのメンバーが揃っていること</div>
+    </div>
+  </div>
+  <div class="checklist-item" onclick="toggleCheck2(2)">
+    <input type="checkbox" id="chk2-2">
+    <div>
+      <div class="checklist-item-text" id="chk2-2-text">タイムテーブルシートに貼り付け完了</div>
+      <div class="checklist-item-sub">時間・内容が正しく入っていること</div>
+    </div>
+  </div>
+  <div class="checklist-item" onclick="toggleCheck2(3)">
+    <input type="checkbox" id="chk2-3">
+    <div>
+      <div class="checklist-item-text" id="chk2-3-text">参加者アプリで名前検索して表示確認済み</div>
+      <div class="checklist-item-sub">自分の出番が正しく表示されること・チームが正しく出ること</div>
+    </div>
+  </div>
+  <div class="checklist-item" onclick="toggleCheck2(4)">
+    <input type="checkbox" id="chk2-4">
+    <div>
+      <div class="checklist-item-text" id="chk2-4-text">参加者へURLをLINEで送信</div>
+      <div class="checklist-item-sub">送信後に1名に開けるか確認を依頼すること</div>
+    </div>
+  </div>
+
+  <div class="checklist-progress">
+    <div class="progress-bar"><div class="progress-fill" id="chk2Progress" style="width:0%"></div></div>
+    <div class="progress-text" id="chk2Count">0 / 5</div>
+  </div>
+  <div class="checklist-all-ok" id="chk2AllOk" style="background:#eefff4;border-color:#a0e0b8;color:#0f7b6c">🎉 全工程完了！参加者への共有が完成しました</div>
+</div>
+
+<!-- 出力プレビュー -->
+<div class="section" style="margin-top:24px">
+  <div class="sec-title">出力プレビュー</div>
+  <div id="exportPreview" class="info-box">ローテーションまたはチームを生成するとプレビューが表示されます</div>
+</div>
+
+</div><!-- /tab-export -->
 
 </div><!-- /container -->
 
+<div class="toast" id="toast"></div>
+
 <script>
 /* ════ SHARED ════ */
+function showToast(msg,duration=2500){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),duration);
+}
 function switchTab(name,btn){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
@@ -478,6 +663,7 @@ function switchTab(name,btn){
   if(name==='solo') soloSyncMembers();
   if(name==='team') teamSyncMembers();
   if(name==='time') tmSyncMembers();
+  if(name==='export') updateExportPreview();
 }
 
 const SKILLS_SOLO=['ベーシック','ハリー','３倍','フロア','アクロ'];
@@ -612,10 +798,8 @@ function mAddJudge(){
 }
 
 /* ════ TAB 1: SOLO ════ */
-// ソロ審査の生成結果（概算タブとリンク）
 let sLastRots=null;
 let sLastCourtCount=2;
-
 let sStaffCount=0;
 let sStaffNames=[];
 let sFloorStaffNames=['スタッフみさき','スタッフそら'];
@@ -672,7 +856,6 @@ function sRenderStaffUI(){
 }
 function sIsStaff(n){return !new Set(mPeople.filter(p=>p.type==='participant').map(p=>p.name.trim())).has(n);}
 
-// 縄審査員を1コートに1人割り当て（ラウンドロビン）
 let sRopeJudgeIndex=0;
 function sPickOneRopeJudge(ropeJudges){
   if(ropeJudges.length===0) return '縄審査員';
@@ -681,7 +864,6 @@ function sPickOneRopeJudge(ropeJudges){
   return picked;
 }
 
-// スキルごとの審査員割り当てカウンタ
 const sJudgeRotIndex={};
 function sPickSkillJudge(skill){
   const candidates=mJudges.filter(j=>j.skills.includes(skill));
@@ -695,7 +877,6 @@ function sPickSkillJudge(skill){
 function sGenerate(){
   const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim());
   if(participants.length===0){document.getElementById('s-output').innerHTML=`<div class="warn-box">参加者が登録されていません。</div>`;return;}
-  // 審査員ラウンドロビンカウンタをリセット
   Object.keys(sJudgeRotIndex).forEach(k=>{sJudgeRotIndex[k]=0;});
   sRopeJudgeIndex=0;
   const target=parseInt(document.getElementById('s-targetRots').value);
@@ -712,8 +893,6 @@ function sGenerate(){
   if(new Set(names).size<names.length){document.getElementById('s-output').innerHTML=`<div class="warn-box">参加者名が重複しています。</div>`;return;}
 
   const rots=[];
-
-  // ─── ベーシック：1人ずつ・単独ローテ・試技回数分繰り返し ───
   const basicJumpers=participants.filter(m=>m.skills.includes('ベーシック'));
   if(basicJumpers.length>0){
     for(let r=0;r<basicRots;r++){
@@ -731,9 +910,7 @@ function sGenerate(){
     }
   }
 
-  // ─── 通常ローテ：スキルごとに目標回数 ───
   const normalSkills=SKILLS_SOLO.filter(s=>s!=='ベーシック'&&participants.some(m=>m.skills.includes(s)));
-  // jSkillCount[name][skill] = 残り試技数
   const jSkillCount={};
   participants.forEach(m=>{
     if(!m.name.trim()) return;
@@ -748,38 +925,25 @@ function sGenerate(){
   let iter=0;
   while(iter<1000){
     iter++;
-    // まだ試技が残っているスキルがあるか確認
     const remSkills=normalSkills.filter(s=>participants.some(m=>m.name.trim()&&jSkillCount[m.name.trim()][s]>0));
     if(remSkills.length===0) break;
-
-    // 残り試技人数が多いスキルを優先
     remSkills.sort((a,b)=>{
       const ca=participants.filter(m=>m.name.trim()&&jSkillCount[m.name.trim()][a]>0).length;
       const cb=participants.filter(m=>m.name.trim()&&jSkillCount[m.name.trim()][b]>0).length;
       return cb-ca;
     });
-
-    // courtCount分のコートを生成
     const courts=[];
     const usedJumpers=[];
     const usedTurnerNames=[];
-
     for(let ci=0;ci<courtCount;ci++){
-      // このコートで使えるスキル（まだ試技残があるもの）
-      const availSkills=remSkills.filter(s=>
-        participants.some(m=>m.name.trim()&&!usedJumpers.includes(m.name.trim())&&jSkillCount[m.name.trim()][s]>0)
-      );
+      const availSkills=remSkills.filter(s=>participants.some(m=>m.name.trim()&&!usedJumpers.includes(m.name.trim())&&jSkillCount[m.name.trim()][s]>0));
       if(!availSkills.length) break;
-
-      // 残り人数が多いスキルを優先
       availSkills.sort((a,b)=>{
         const ca=participants.filter(m=>!usedJumpers.includes(m.name.trim())&&jSkillCount[m.name.trim()][a]>0).length;
         const cb=participants.filter(m=>!usedJumpers.includes(m.name.trim())&&jSkillCount[m.name.trim()][b]>0).length;
         return cb-ca;
       });
       const sk=availSkills[0];
-
-      // ジャンパー選択
       const jOpts=participants
         .filter(m=>m.name.trim()&&!usedJumpers.includes(m.name.trim())&&jSkillCount[m.name.trim()][sk]>0)
         .sort((a,b)=>jSkillCount[b.name.trim()][sk]-jSkillCount[a.name.trim()][sk]);
@@ -787,15 +951,11 @@ function sGenerate(){
       const j=jOpts[0];
       jSkillCount[j.name.trim()][sk]--;
       usedJumpers.push(j.name.trim());
-
-      // ターナー選択
       const tm=SKILL_TURNER_MODE[sk]||'rope';
       let t;
-      if(tm==='none'){
-        t=[];
-      } else if(tm==='staff'){
-        t=[floorT1,floorT2];
-      } else {
+      if(tm==='none'){t=[];}
+      else if(tm==='staff'){t=[floorT1,floorT2];}
+      else{
         const exAll=[...usedJumpers,...usedTurnerNames];
         t=sPickPair(allTP,exAll,j.name.trim(),tHist,usedTurnerNames);
         if(t&&t.length>=2){
@@ -803,27 +963,18 @@ function sGenerate(){
           sRecordPair(tHist,j.name.trim(),t);
         }
       }
-
       const ropeJ=tm!=='none'?sPickOneRopeJudge(ropeJudges):null;
-      courts.push({
-        skill:sk,
-        jumper:j.name.trim(),
-        turners:t||[],
-        judgeJ:sPickSkillJudge(sk),
-        hasRopeJudge:tm!=='none',
-        ropeJudge:ropeJ
-      });
+      courts.push({skill:sk,jumper:j.name.trim(),turners:t||[],judgeJ:sPickSkillJudge(sk),hasRopeJudge:tm!=='none',ropeJudge:ropeJ});
     }
-
     if(courts.length>0) rots.push({type:'normal',courts});
     else break;
   }
 
   if(!rots.length){document.getElementById('s-output').innerHTML=`<div class="warn-box">ローテーションを生成できませんでした。</div>`;return;}
-  // 概算タブ用にローテ結果を保存
   sLastRots=rots;
   sLastCourtCount=courtCount;
   sRenderOutput(rots,participants);
+  showToast('✅ ローテーション生成完了！CSV出力タブから出力できます');
 }
 
 function sGetStaffPool(){
@@ -913,7 +1064,6 @@ function sRenderOutput(rots,participants){
     }
   });
 
-  // 参加者別集計
   html+=`</div><div class="section"><div class="sec-title">参加者別集計</div>
   <table><thead><tr><th>参加者</th>
     ${SKILLS_SOLO.map(s=>`<th style="text-align:center"><span style="${ps(s)};font-size:10px;padding:1px 6px;border-radius:20px;border:.5px solid">${s}</span></th>`).join('')}
@@ -927,7 +1077,6 @@ function sRenderOutput(rots,participants){
     <td style="text-align:center">${m.skills.includes('縄')?`<span style="${ps('縄')};font-size:11px;padding:1px 8px;border-radius:20px;border:.5px solid;cursor:default">✓</span>`:'—'}</td>
   </tr>`).join('')}</tbody></table></div>`;
 
-  // 審査員稼働集計
   if(mJudges.length>0){
     html+=`<div class="section"><div class="sec-title">審査員稼働集計</div>
     <table><thead><tr><th>審査員</th><th>担当スキル</th><th style="text-align:center">J審査（回）</th><th style="text-align:center">縄審査（回）</th></tr></thead><tbody>
@@ -944,6 +1093,7 @@ function sRenderOutput(rots,participants){
 
 /* ════ TAB 2: TEAM ════ */
 const T_CONDITIONS=[{skill:'縄',count:2},{skill:'アクロ',count:1},{skill:'３倍',count:1},{skill:'ハリー',count:1},{skill:'ベーシック',count:1},{skill:'フロア',count:1}];
+let tLastResult=null;
 
 function teamSyncMembers(){
   const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim());
@@ -969,7 +1119,6 @@ function tGenerate(){
   const targetS=5-targetP;
   const names=pool.map(p=>p.name.trim());
   if(new Set(names).size<names.length){document.getElementById('t-output').innerHTML=`<div class="warn-box">名前が重複しています。</div>`;return;}
-  // 最もスコアが高い結果を採用（不成立チームがあっても出力）
   let best=null,bestScore=-Infinity;
   for(let trial=0;trial<800;trial++){
     const result=tTryAssign(pool,participants,nonJudgeStaff,numTeams,targetP,targetS,mode);
@@ -981,9 +1130,10 @@ function tGenerate(){
   if(!best||best.length===0){
     document.getElementById('t-output').innerHTML=`<div class="err-box">チームを編成できませんでした。参加者・スタッフのスキルを確認してください。</div>`;return;
   }
+  tLastResult=best;
   tRenderOutput(best,targetP,targetS);
+  showToast('✅ チーム編成完了！CSV出力タブから出力できます');
 }
-function tDupPenalty(teams){const count={};teams.flat().forEach(p=>{count[p.name]=(count[p.name]||0)+1;});return Object.values(count).reduce((s,c)=>s+(c-1)*60,0);}
 function tTryAssign(pool,participants,nonJudgeStaff,numTeams,targetP,targetS,mode){
   const teams=[];const pCount={};pool.forEach(p=>{pCount[p.name]=0;});const maxPP=1;
   for(let ti=0;ti<numTeams;ti++){
@@ -1012,7 +1162,6 @@ function tTryAssign(pool,participants,nonJudgeStaff,numTeams,targetP,targetS,mod
       if(!pick.length) break;
       team.push(pick[0]);inT.add(pick[0].name);
     }
-    // 不成立でも追加する（条件チェックはしない）
     teams.push(team);
     team.forEach(p=>{pCount[p.name]++;});
   }
@@ -1021,9 +1170,6 @@ function tTryAssign(pool,participants,nonJudgeStaff,numTeams,targetP,targetS,mod
 function tRenderOutput(teams,targetP,targetS){
   const TCOLORS=['#1a5fb4','#1a7a40','#854F0B','#3C3489','#993C1D','#0F6E56','#c0392b','#9a6000'];
   const participants=mPeople.filter(p=>p.type==='participant');
-  const nameCount={};teams.flat().forEach(p=>{nameCount[p.name]=(nameCount[p.name]||0)+1;});
-  const dupNames=new Set(Object.entries(nameCount).filter(([,c])=>c>1).map(([n])=>n));
-  const nameToTeams={};teams.forEach((team,ti)=>team.forEach(p=>{if(!nameToTeams[p.name])nameToTeams[p.name]=[];nameToTeams[p.name].push(ti+1);}));
   let html=`<div class="section"><div class="sec-title">編成結果サマリー</div>
   <div class="stat-grid"><div class="stat"><div class="stat-val">${teams.length}</div><div class="stat-lbl">編成チーム数</div></div>
   <div class="stat"><div class="stat-val">${new Set(teams.flat().map(p=>p.name)).size}</div><div class="stat-lbl">参加ユニーク人数</div></div>
@@ -1038,7 +1184,7 @@ function tRenderOutput(teams,targetP,targetS){
       <span class="team-name">チーム ${ti+1}</span><span style="font-size:11px;color:#888">参${pCnt}:ス${5-pCnt}</span>
       <span style="font-size:11px;font-weight:600;color:${allOk?'#1a7a40':'#c0392b'}">${allOk?'✓ 条件充足':'✗ 条件不足'}</span>
     </div><div class="team-body">
-      ${team.map(p=>{const isP=!!participants.find(pp=>pp.name===p.name);const isDup=dupNames.has(p.name);const others=nameToTeams[p.name].filter(n=>n!==ti+1);
+      ${team.map(p=>{const isP=!!participants.find(pp=>pp.name===p.name);
         return `<div class="tm-row"><span class="tm-name">${p.name}<span style="font-size:10px;color:#bbb;margin-left:2px">${isP?'':'運営'}</span></span>
         <div class="tm-pills">${p.skills.map(s=>`<span class="tm-pill" style="${ps(s)}">${s}</span>`).join('')}</div></div>`;}).join('')}
       <div class="cond-row">${conds.map(c=>`<span class="cond-tag ${c.ok?'cond-ok':'cond-ng'}">${c.skill} ${c.actual}/${c.required}</span>`).join('')}</div>
@@ -1067,73 +1213,29 @@ function tmC(id){return document.getElementById(id).checked;}
 function tmCalc(){
   const intro=tmV('tm-intro'),breakTime=tmV('tm-breakTime'),breakCount=tmI('tm-breakCount');
   const transfer=tmV('tm-transfer');
-
-  // ─── ソロ審査：ローテ生成結果がある場合はそれを使う ───
-  const SC_COLORS={
-    'ベーシック':{color:'#993C1D',bg:'#FAECE7',bd:'#F0997B'},
-    'ハリー':{color:'#854F0B',bg:'#FAEEDA',bd:'#FAC775'},
-    '３倍':{color:'#185FA5',bg:'#E6F1FB',bd:'#85B7EB'},
-    'フロア':{color:'#3B6D11',bg:'#EAF3DE',bd:'#97C459'},
-    'アクロ':{color:'#3C3489',bg:'#EEEDFE',bd:'#AFA9EC'},
-  };
-
-  let soloTotal=0;
-  let soloBreakdown=[];
-  let soloNote='';
-
-  if(!sLastRots){
-    // 未生成の場合は警告のみ
-    document.getElementById('tm-result').innerHTML=`<div class="warn-box">⚠️ 先に「ソロ審査」タブでローテーションを生成してください。生成後に概算が表示されます。</div>`;
-    return;
-  }
-
-  // ローテ生成結果からスキルごとのローテ数を集計
+  const SC_COLORS={'ベーシック':{color:'#993C1D',bg:'#FAECE7',bd:'#F0997B'},'ハリー':{color:'#854F0B',bg:'#FAEEDA',bd:'#FAC775'},'３倍':{color:'#185FA5',bg:'#E6F1FB',bd:'#85B7EB'},'フロア':{color:'#3B6D11',bg:'#EAF3DE',bd:'#97C459'},'アクロ':{color:'#3C3489',bg:'#EEEDFE',bd:'#AFA9EC'}};
+  let soloTotal=0;let soloBreakdown=[];
+  if(!sLastRots){document.getElementById('tm-result').innerHTML=`<div class="warn-box">⚠️ 先に「ソロ審査」タブでローテーションを生成してください。</div>`;return;}
   const basicRots=sLastRots.filter(r=>r.type==='basic');
   const normalRots=sLastRots.filter(r=>r.type==='normal');
-
-  // ベーシック：1人ずつ単独なのでローテ数×時間
   const pB=tmV('tm-p-basic'),wB=tmC('tm-c-basic')?tmV('tm-w-basic'):0;
   const basicMins=basicRots.length*((wB+pB)+transfer);
   soloTotal+=basicMins;
-  soloBreakdown.push({
-    label:'ベーシック（リズム）',
-    detail:`${basicRots.length}ローテ × (練習${wB}+パフォ${pB}+転換${transfer})分`,
-    mins:basicMins,
-    ...SC_COLORS['ベーシック'],
-    count:basicRots.length
-  });
-
-  // 通常スキル：スキルごとにローテ数を集計、コート数で同時進行÷
+  soloBreakdown.push({label:'ベーシック（リズム）',detail:`${basicRots.length}ローテ × (練習${wB}+パフォ${pB}+転換${transfer})分`,mins:basicMins,...SC_COLORS['ベーシック'],count:basicRots.length});
   const skillRotCounts={};
   SKILLS_SOLO.filter(s=>s!=='ベーシック').forEach(s=>{skillRotCounts[s]=0;});
-  normalRots.forEach(r=>{
-    r.courts.forEach(c=>{skillRotCounts[c.skill]=(skillRotCounts[c.skill]||0)+1;});
-  });
-
+  normalRots.forEach(r=>{r.courts.forEach(c=>{skillRotCounts[c.skill]=(skillRotCounts[c.skill]||0)+1;});});
   SKILLS_SOLO.filter(s=>s!=='ベーシック').forEach(s=>{
-    const cnt=skillRotCounts[s]||0;
-    if(cnt===0) return;
+    const cnt=skillRotCounts[s]||0;if(cnt===0) return;
     const idMap={'ハリー':'harry','３倍':'speed','フロア':'floor','アクロ':'acro'};
-    const id=idMap[s];
-    const p=tmV(`tm-p-${id}`),w=tmC(`tm-c-${id}`)?tmV(`tm-w-${id}`):0;
-    // 同時展開で並行するので実際のローテ数はnormalRotsの中で何回そのスキルが出たか
-    // ただし同一ローテに複数コートあるので実時間はnormalRots.length×時間
-    const raw=cnt*((w+p)+transfer);
-    soloTotal+=raw;
-    soloBreakdown.push({
-      label:s==='３倍'?'３倍（スピード/マックス）':s==='ハリー'?'ハリー（倍速/ステップ）':s,
-      detail:`${cnt}試技 × (練習${w}+パフォ${p}+転換${transfer})分`,
-      mins:raw,
-      ...SC_COLORS[s],
-      count:cnt
-    });
+    const id=idMap[s];const p=tmV(`tm-p-${id}`),w=tmC(`tm-c-${id}`)?tmV(`tm-w-${id}`):0;
+    const raw=cnt*((w+p)+transfer);soloTotal+=raw;
+    soloBreakdown.push({label:s==='３倍'?'３倍（スピード/マックス）':s==='ハリー'?'ハリー（倍速/ステップ）':s,detail:`${cnt}試技 × (練習${w}+パフォ${p}+転換${transfer})分`,mins:raw,...SC_COLORS[s],count:cnt});
   });
-
-  // 同時展開分の補正：通常ローテはcourtCount個同時なので実時間÷courtCount
   const normalMinsRaw=soloTotal-basicMins;
   const normalMinsActual=sLastCourtCount>0?normalMinsRaw/sLastCourtCount:normalMinsRaw;
   soloTotal=basicMins+normalMinsActual;
-  soloNote=`（通常ローテは${sLastCourtCount}コート同時進行・実ローテ数${normalRots.length}回）`;
+  const soloNote=`（通常ローテは${sLastCourtCount}コート同時進行・実ローテ数${normalRots.length}回）`;
   let teamMins=0,teamBreakdown=[];
   const teamEnabled=tmC('tm-teamEnabled');
   if(teamEnabled){
@@ -1142,7 +1244,7 @@ function tmCalc(){
     teamMins=sync+tc*(perf+tt);
     teamBreakdown.push({label:'擦り合わせ・練習（全チーム同時）',detail:`固定 ${sync}分`,mins:sync});
     teamBreakdown.push({label:`パフォーマンス×${tc}チーム`,detail:`${tc}×(${perf}+転換${tt})分`,mins:tc*(perf+tt)});
-    if(re){teamMins+=rp+tc*(perf+tt);teamBreakdown.push({label:'修正テスト練習（全チーム同時）',detail:`固定 ${rp}分`,mins:rp});teamBreakdown.push({label:`再パフォーマンス×${tc}チーム`,detail:`${tc}×(${perf}+転換${tt})分`,mins:tc*(perf+tt)});}
+    if(re){teamMins+=rp+tc*(perf+tt);teamBreakdown.push({label:'修正テスト練習',detail:`固定 ${rp}分`,mins:rp});teamBreakdown.push({label:`再パフォーマンス×${tc}チーム`,detail:`${tc}×(${perf}+転換${tt})分`,mins:tc*(perf+tt)});}
   }
   const breakTotal=breakTime*breakCount,grand=intro+soloTotal+teamMins+breakTotal;
   const gH=Math.floor(grand/60),gM=Math.round(grand%60);
@@ -1170,14 +1272,131 @@ function tmCalc(){
   document.getElementById('tm-result').innerHTML=html;
 }
 
+/* ════ TAB 4: CSV出力 ════ */
+
+// チェックリスト
+function toggleCheck(i){
+  const cb=document.getElementById('chk'+i);
+  cb.checked=!cb.checked;
+  const txt=document.getElementById('chk'+i+'-text');
+  txt.classList.toggle('done',cb.checked);
+  updateChecklistProgress();
+}
+function toggleCheck2(i){
+  const cb=document.getElementById('chk2-'+i);
+  cb.checked=!cb.checked;
+  const txt=document.getElementById('chk2-'+i+'-text');
+  txt.classList.toggle('done',cb.checked);
+  updateChecklistProgress2();
+}
+function updateChecklistProgress(){
+  const total=6;
+  const done=[...Array(total)].filter((_,i)=>document.getElementById('chk'+i)?.checked).length;
+  document.getElementById('chkProgress').style.width=(done/total*100)+'%';
+  document.getElementById('chkCount').textContent=`${done} / ${total}`;
+  document.getElementById('chkAllOk').style.display=done===total?'block':'none';
+}
+function updateChecklistProgress2(){
+  const total=5;
+  const done=[...Array(total)].filter((_,i)=>document.getElementById('chk2-'+i)?.checked).length;
+  document.getElementById('chk2Progress').style.width=(done/total*100)+'%';
+  document.getElementById('chk2Count').textContent=`${done} / ${total}`;
+  document.getElementById('chk2AllOk').style.display=done===total?'block':'none';
+}
+
+// CSV生成・コピー
+function copyToClipboard(text,label){
+  navigator.clipboard.writeText(text).then(()=>{
+    showToast(`✅ ${label}をクリップボードにコピーしました。スプシに貼り付けてください。`,3000);
+  }).catch(()=>{
+    // fallback
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    showToast(`✅ ${label}をコピーしました`,3000);
+  });
+}
+
+function exportRotationCSV(){
+  if(!sLastRots){showToast('⚠️ 先にソロ審査タブでローテーションを生成してください',3000);return;}
+  const rows=[['Rot番号','種別','コート','スキル','ジャンパー','ターナー1','ターナー2','J審査員','縄審査員']];
+  sLastRots.forEach((r,i)=>{
+    const num=String(i+1).padStart(2,'0');
+    if(r.type==='basic'){
+      rows.push([num,'ベーシック','—','ベーシック',r.jumper,r.turners[0]||'',r.turners[1]||'',r.judgeJ,r.ropeJudge||'']);
+    } else {
+      r.courts.forEach((c,ci)=>{
+        rows.push([num,'通常',`COURT ${String.fromCharCode(65+ci)}`,c.skill,c.jumper,c.turners[0]||'',c.turners[1]||'',c.judgeJ,c.hasRopeJudge?(c.ropeJudge||''):'（不要）']);
+      });
+    }
+  });
+  copyToClipboard(rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n'),'ローテーションCSV');
+}
+
+function exportTeamCSV(){
+  if(!tLastResult){showToast('⚠️ 先にチーム編成タブでチームを生成してください',3000);return;}
+  const participants=mPeople.filter(p=>p.type==='participant');
+  const rows=[['チーム名','メンバー名','種別','スキル']];
+  tLastResult.forEach((team,ti)=>{
+    team.forEach(p=>{
+      const isP=!!participants.find(pp=>pp.name===p.name);
+      rows.push([`チーム${ti+1}`,p.name,isP?'参加者':'運営スタッフ',p.skills.join('・')]);
+    });
+  });
+  copyToClipboard(rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n'),'チームCSV');
+}
+
+function exportTimetableCSV(){
+  // タイムテーブルは固定テンプレ（実際はアプリの概算タブと連動させる想定）
+  const rows=[
+    ['時間','フェーズ','内容','備考'],
+    ['10:00','受付','集合・持ち物確認',''],
+    ['10:15','説明','オリエンテーション・審査説明','全員'],
+    ['10:30','ソロ審査','ベーシック → 通常ローテーション','2コート同時進行'],
+    ['12:30','休憩','昼食・自由時間','30分'],
+    ['13:00','ソロ審査','残りローテーション',''],
+    ['14:00','休憩','自由時間・ストレッチ','10分'],
+    ['14:10','チーム審査','擦り合わせ・練習','全チーム同時 60分'],
+    ['15:10','チーム審査','パフォーマンス発表','1チームずつ'],
+    ['16:00','休憩','自由時間','10分'],
+    ['16:10','チーム審査','修正テスト・再発表',''],
+    ['17:30','クロージング','解散・連絡事項',''],
+    ['18:00','終了予定','',''],
+  ];
+  copyToClipboard(rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n'),'タイムテーブルCSV');
+}
+
+function updateExportPreview(){
+  const hasRot=!!sLastRots;
+  const hasTeam=!!tLastResult;
+  const rotCount=hasRot?sLastRots.reduce((s,r)=>s+(r.type==='normal'?r.courts.length:1),0):0;
+  const teamCount=hasTeam?tLastResult.length:0;
+  const memberCount=hasTeam?new Set(tLastResult.flat().map(p=>p.name)).size:0;
+  document.getElementById('exportPreview').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div style="text-align:center">
+        <div style="font-size:22px;font-weight:700;color:${hasRot?'#1a5fb4':'#ccc'}">${hasRot?sLastRots.length:'—'}</div>
+        <div style="font-size:11px;color:#888;margin-top:2px">ローテーション数</div>
+        <div style="font-size:11px;color:${hasRot?'#1a7a40':'#f5b8b0'};margin-top:4px;font-weight:600">${hasRot?'✓ 生成済み':'未生成'}</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:22px;font-weight:700;color:${hasTeam?'#1a5fb4':'#ccc'}">${hasTeam?teamCount:'—'}</div>
+        <div style="font-size:11px;color:#888;margin-top:2px">チーム数 / ${memberCount}名</div>
+        <div style="font-size:11px;color:${hasTeam?'#1a7a40':'#f5b8b0'};margin-top:4px;font-weight:600">${hasTeam?'✓ 生成済み':'未生成'}</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:22px;font-weight:700;color:#1a5fb4">固定</div>
+        <div style="font-size:11px;color:#888;margin-top:2px">タイムテーブル</div>
+        <div style="font-size:11px;color:#1a7a40;margin-top:4px;font-weight:600">✓ 出力可能</div>
+      </div>
+    </div>`;
+}
+
 /* ════ INIT ════ */
 mResetDefault();
 mRenderAll();
 sRenderStaffUI();
-// 修正テストのデフォルト表示
 document.getElementById('tm-retest-field').style.display='block';
 tmCalc();
-
 </script>
 </body>
 </html>
