@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HARIBOWオーディション チーム編成 ソロローテーション案生成ツール</title>
+<title>HARIBOWオーディション　ソロローテーション案編成ツール</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:14px;color:#1a1a1a;background:#f5f5f0;min-height:100vh;padding:24px 16px}
@@ -857,19 +857,25 @@ function sRenderStaffUI(){
 function sIsStaff(n){return !new Set(mPeople.filter(p=>p.type==='participant').map(p=>p.name.trim())).has(n);}
 
 let sRopeJudgeIndex=0;
-function sPickOneRopeJudge(ropeJudges){
+function sPickOneRopeJudge(ropeJudges,usedJudges=[]){
   if(ropeJudges.length===0) return '縄審査員';
-  const picked=ropeJudges[sRopeJudgeIndex%ropeJudges.length].name;
+  // 同一ローテで未使用の審査員を優先
+  const available=ropeJudges.filter(j=>!usedJudges.includes(j.name));
+  const pool=available.length>0?available:ropeJudges;
+  const picked=pool[sRopeJudgeIndex%pool.length].name;
   sRopeJudgeIndex++;
   return picked;
 }
 
 const sJudgeRotIndex={};
-function sPickSkillJudge(skill){
+function sPickSkillJudge(skill,usedJudges=[]){
   const candidates=mJudges.filter(j=>j.skills.includes(skill));
   if(candidates.length===0) return skill+'審査員';
+  // 同一ローテで未使用の審査員を優先
+  const available=candidates.filter(j=>!usedJudges.includes(j.name));
+  const pool=available.length>0?available:candidates;
   if(!sJudgeRotIndex[skill]) sJudgeRotIndex[skill]=0;
-  const picked=candidates[sJudgeRotIndex[skill]%candidates.length].name;
+  const picked=pool[sJudgeRotIndex[skill]%pool.length].name;
   sJudgeRotIndex[skill]++;
   return picked;
 }
@@ -935,8 +941,31 @@ function sGenerate(){
     const courts=[];
     const usedJumpers=[];
     const usedTurnerNames=[];
+    const usedJudgesInRot=[];
+    const skillCourtCount={};// 同一ローテ内で各スキルが何コート使われたか
+    // スキルごとの審査員上限を計算
+    const skillJudgeLimit={};
+    SKILLS_SOLO.forEach(s=>{
+      if(s==='ベーシック') return;
+      const tm=SKILL_TURNER_MODE[s]||'rope';
+      if(tm==='none'){
+        // アクロは審査員の人数で制限
+        skillJudgeLimit[s]=mJudges.filter(j=>j.skills.includes(s)).length||1;
+      } else if(tm==='staff'){
+        // フロアはJ審査員の人数で制限
+        skillJudgeLimit[s]=mJudges.filter(j=>j.skills.includes(s)).length||1;
+      } else {
+        // 縄が必要なスキルは、J審査員と縄審査員の少ない方で制限
+        const jCount=mJudges.filter(j=>j.skills.includes(s)).length||1;
+        const rCount=mJudges.filter(j=>j.skills.includes('縄')).length||1;
+        skillJudgeLimit[s]=Math.min(jCount,rCount);
+      }
+    });
     for(let ci=0;ci<courtCount;ci++){
-      const availSkills=remSkills.filter(s=>participants.some(m=>m.name.trim()&&!usedJumpers.includes(m.name.trim())&&jSkillCount[m.name.trim()][s]>0));
+      const availSkills=remSkills.filter(s=>
+        participants.some(m=>m.name.trim()&&!usedJumpers.includes(m.name.trim())&&jSkillCount[m.name.trim()][s]>0)
+        &&(skillCourtCount[s]||0)<(skillJudgeLimit[s]||99)// 審査員人数上限チェック
+      );
       if(!availSkills.length) break;
       availSkills.sort((a,b)=>{
         const ca=participants.filter(m=>!usedJumpers.includes(m.name.trim())&&jSkillCount[m.name.trim()][a]>0).length;
@@ -963,8 +992,12 @@ function sGenerate(){
           sRecordPair(tHist,j.name.trim(),t);
         }
       }
-      const ropeJ=tm!=='none'?sPickOneRopeJudge(ropeJudges):null;
-      courts.push({skill:sk,jumper:j.name.trim(),turners:t||[],judgeJ:sPickSkillJudge(sk),hasRopeJudge:tm!=='none',ropeJudge:ropeJ});
+      const judgeJ=sPickSkillJudge(sk,usedJudgesInRot);
+      if(judgeJ) usedJudgesInRot.push(judgeJ);
+      const ropeJ=tm!=='none'?sPickOneRopeJudge(ropeJudges,usedJudgesInRot):null;
+      if(ropeJ) usedJudgesInRot.push(ropeJ);
+      skillCourtCount[sk]=(skillCourtCount[sk]||0)+1;// 使用コート数を記録
+      courts.push({skill:sk,jumper:j.name.trim(),turners:t||[],judgeJ,hasRopeJudge:tm!=='none',ropeJudge:ropeJ});
     }
     if(courts.length>0) rots.push({type:'normal',courts});
     else break;
