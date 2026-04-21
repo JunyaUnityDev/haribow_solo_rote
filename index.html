@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HARIBOWオーディション　ソロローテーション案編成ツール</title>
+<title>HARIBOWオーディション ソロローテーション、チーム編成案作成ツール</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:14px;color:#1a1a1a;background:#f5f5f0;min-height:100vh;padding:24px 16px}
@@ -156,6 +156,7 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
   .row2,.row3{grid-template-columns:1fr}
 }
 </style>
+<script src="haribow_members.js"></script>
 </head>
 <body>
 <div class="container">
@@ -270,6 +271,14 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
   <div class="sec-title">フロア専用ターナー（スタッフ派遣）</div>
   <div style="font-size:12px;color:#999;margin-bottom:8px">フロアは毎回スタッフがターナーを担当します。名前を入力してください。</div>
   <div id="s-floor-staff-wrap"></div>
+</div>
+
+<hr class="div">
+
+<div class="section">
+  <div class="sec-title">アクロ専用ターナー（スタッフ派遣）</div>
+  <div style="font-size:12px;color:#999;margin-bottom:8px">アクロは毎回スタッフがターナーを担当します。フロアと同じスタッフを登録した場合、同一ローテーションでの重複は自動回避されます。</div>
+  <div id="s-acro-staff-wrap"></div>
 </div>
 
 <hr class="div">
@@ -668,7 +677,7 @@ function switchTab(name,btn){
 
 const SKILLS_SOLO=['ベーシック','ハリー','３倍','フロア','アクロ'];
 const SKILLS_ALL=['ベーシック','ハリー','３倍','フロア','アクロ','縄'];
-const SKILL_TURNER_MODE={'ベーシック':'rope','ハリー':'rope','３倍':'rope','フロア':'staff','アクロ':'none'};
+const SKILL_TURNER_MODE={'ベーシック':'rope','ハリー':'rope','３倍':'rope','フロア':'staff','アクロ':'staff_acro'};
 const SC={
   'ベーシック':{bg:'#FAECE7',bd:'#F0997B',tx:'#993C1D'},
   'ハリー':{bg:'#FAEEDA',bd:'#FAC775',tx:'#854F0B'},
@@ -684,7 +693,12 @@ function bs(s){const c=SC[s]||{bg:'#F4F4F4',bd:'#DDD',tx:'#999'};return `backgro
 let mPeople=[];
 let mJudges=[];
 
-function mDefaultPeople(){return [
+function mDefaultPeople(){
+  // haribow_members.js から読み込む
+  if(typeof HARIBOW_MEMBERS !== 'undefined') return JSON.parse(JSON.stringify(HARIBOW_MEMBERS));
+  return mDefaultPeopleBuiltIn();
+}
+function mDefaultPeopleBuiltIn(){return [
   {name:'かづき',type:'participant',skills:['ベーシック','ハリー','縄'],isJudge:false},
   {name:'せな',type:'participant',skills:['３倍','アクロ'],isJudge:false},
   {name:'シュースケ',type:'participant',skills:['ハリー','縄'],isJudge:false},
@@ -716,7 +730,12 @@ function mDefaultPeople(){return [
   {name:'スタッフD',type:'staff',skills:['ベーシック','フロア','縄'],isJudge:false},
   {name:'スタッフE',type:'staff',skills:['ハリー','縄'],isJudge:false},
 ];}
-function mDefaultJudges(){return [
+function mDefaultJudges(){
+  // haribow_members.js から読み込む
+  if(typeof HARIBOW_JUDGES !== 'undefined') return JSON.parse(JSON.stringify(HARIBOW_JUDGES));
+  return mDefaultJudgesBuiltIn();
+}
+function mDefaultJudgesBuiltIn(){return [
   {name:'潤弥',skills:['ベーシック']},
   {name:'まほろ',skills:['３倍','縄']},
   {name:'りゅうすけ',skills:['ハリー']},
@@ -726,7 +745,6 @@ function mDefaultJudges(){return [
   {name:'おち',skills:['縄']},
   {name:'まきと',skills:['縄']},
 ];}
-
 function mResetDefault(){mPeople=mDefaultPeople();mJudges=mDefaultJudges();mRenderAll();}
 function mRenderAll(){mRenderLegend();mRenderSection('participant');mRenderSection('staff');mRenderJudgesList();mRenderSummary();}
 
@@ -802,7 +820,8 @@ let sLastRots=null;
 let sLastCourtCount=2;
 let sStaffCount=0;
 let sStaffNames=[];
-let sFloorStaffNames=['スタッフみさき','スタッフそら'];
+let sFloorStaffNames=(typeof HARIBOW_FLOOR_STAFF!=='undefined')?[...HARIBOW_FLOOR_STAFF]:['スタッフみさき','スタッフそら'];
+let sAcroStaffNames=(typeof HARIBOW_ACRO_STAFF!=='undefined')?[...HARIBOW_ACRO_STAFF]:['スタッフA','スタッフB'];
 
 function soloSyncMembers(){
   const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim());
@@ -835,6 +854,12 @@ function renderFloorStaffFields(){
   wrap.innerHTML=`<div class="row2" style="margin-top:8px">
     <div class="field"><label>フロア専用ターナー①（スタッフ）</label><input type="text" value="${sFloorStaffNames[0]}" oninput="sFloorStaffNames[0]=this.value" placeholder="スタッフ名" style="width:100%;margin-top:4px"></div>
     <div class="field"><label>フロア専用ターナー②（スタッフ）</label><input type="text" value="${sFloorStaffNames[1]}" oninput="sFloorStaffNames[1]=this.value" placeholder="スタッフ名" style="width:100%;margin-top:4px"></div>
+  </div>`;
+  const acroWrap=document.getElementById('s-acro-staff-wrap');
+  if(!acroWrap) return;
+  acroWrap.innerHTML=`<div class="row2" style="margin-top:8px">
+    <div class="field"><label>アクロ専用ターナー①（スタッフ）</label><input type="text" value="${sAcroStaffNames[0]}" oninput="sAcroStaffNames[0]=this.value" placeholder="スタッフ名" style="width:100%;margin-top:4px"></div>
+    <div class="field"><label>アクロ専用ターナー②（スタッフ）</label><input type="text" value="${sAcroStaffNames[1]}" oninput="sAcroStaffNames[1]=this.value" placeholder="スタッフ名" style="width:100%;margin-top:4px"></div>
   </div>`;
 }
 function renderBasicTurnerFields(){
@@ -951,8 +976,8 @@ function sGenerate(){
       if(tm==='none'){
         // アクロは審査員の人数で制限
         skillJudgeLimit[s]=mJudges.filter(j=>j.skills.includes(s)).length||1;
-      } else if(tm==='staff'){
-        // フロアはJ審査員の人数で制限
+      } else if(tm==='staff'||tm==='staff_acro'){
+        // フロア・アクロはJ審査員の人数で制限
         skillJudgeLimit[s]=mJudges.filter(j=>j.skills.includes(s)).length||1;
       } else {
         // 縄が必要なスキルは、J審査員と縄審査員の少ない方で制限
@@ -983,7 +1008,22 @@ function sGenerate(){
       const tm=SKILL_TURNER_MODE[sk]||'rope';
       let t;
       if(tm==='none'){t=[];}
-      else if(tm==='staff'){t=[floorT1,floorT2];}
+      else if(tm==='staff'){
+        // フロアターナー：usedTurnerNamesで重複回避
+        const acroT1=sAcroStaffNames[0]||'アクロスタッフ①';
+        const acroT2=sAcroStaffNames[1]||'アクロスタッフ②';
+        const floorAvail=[floorT1,floorT2].filter(n=>!usedTurnerNames.includes(n));
+        t=floorAvail.length>=2?[floorT1,floorT2]:[floorT1,floorT2];// フロアは固定2名
+        t.forEach(n=>{if(!usedTurnerNames.includes(n))usedTurnerNames.push(n);});
+      }
+      else if(tm==='staff_acro'){
+        // アクロターナー：usedTurnerNamesで重複回避
+        const acroT1=sAcroStaffNames[0]||'アクロスタッフ①';
+        const acroT2=sAcroStaffNames[1]||'アクロスタッフ②';
+        const acroAvail=[acroT1,acroT2].filter(n=>!usedTurnerNames.includes(n));
+        t=acroAvail.length>=2?[acroT1,acroT2]:acroAvail.length===1?[acroAvail[0],acroT2]:[acroT1,acroT2];
+        t.forEach(n=>{if(!usedTurnerNames.includes(n))usedTurnerNames.push(n);});
+      }
       else{
         const exAll=[...usedJumpers,...usedTurnerNames];
         t=sPickPair(allTP,exAll,j.name.trim(),tHist,usedTurnerNames);
@@ -997,7 +1037,7 @@ function sGenerate(){
       const ropeJ=tm!=='none'?sPickOneRopeJudge(ropeJudges,usedJudgesInRot):null;
       if(ropeJ) usedJudgesInRot.push(ropeJ);
       skillCourtCount[sk]=(skillCourtCount[sk]||0)+1;// 使用コート数を記録
-      courts.push({skill:sk,jumper:j.name.trim(),turners:t||[],judgeJ,hasRopeJudge:tm!=='none',ropeJudge:ropeJ});
+      courts.push({skill:sk,jumper:j.name.trim(),turners:t||[],judgeJ,hasRopeJudge:tm!=='none'&&tm!=='staff_acro',ropeJudge:ropeJ});
     }
     if(courts.length>0) rots.push({type:'normal',courts});
     else break;
