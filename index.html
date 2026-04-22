@@ -909,12 +909,17 @@ function sPickSkillJudge(skill,usedJudges=[]){
   return picked;
 }
 
+function sShuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
 function sGenerate(){
   const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim());
   if(participants.length===0){document.getElementById('s-output').innerHTML=`<div class="warn-box">参加者が登録されていません。</div>`;return;}
-  Object.keys(sJudgeRotIndex).forEach(k=>{sJudgeRotIndex[k]=0;});
-  sRopeJudgeIndex=0;
-  sJudgeUsage={};
   const target=parseInt(document.getElementById('s-targetRots').value);
   const courtCount=parseInt(document.getElementById('s-courtCount').value)||2;
   const basicRots=parseInt(document.getElementById('s-basicRots').value);
@@ -928,9 +933,14 @@ function sGenerate(){
   const names=participants.map(m=>m.name.trim());
   if(new Set(names).size<names.length){document.getElementById('s-output').innerHTML=`<div class="warn-box">参加者名が重複しています。</div>`;return;}
 
-  const turnerUsage={};// 疲労分散用：ターナー総出番回数
-  const rots=[];
-  const basicJumpers=participants.filter(m=>m.skills.includes('ベーシック'));
+  function genOnce(participants){
+    // 状態リセット（試行ごと）
+    Object.keys(sJudgeRotIndex).forEach(k=>{sJudgeRotIndex[k]=0;});
+    sRopeJudgeIndex=0;
+    sJudgeUsage={};
+    const turnerUsage={};// 疲労分散用：ターナー総出番回数
+    const rots=[];
+    const basicJumpers=participants.filter(m=>m.skills.includes('ベーシック'));
   if(basicJumpers.length>0){
     for(let r=0;r<basicRots;r++){
       for(const jm of basicJumpers){
@@ -1060,11 +1070,27 @@ function sGenerate(){
     else break;
   }
 
-  if(!rots.length){document.getElementById('s-output').innerHTML=`<div class="warn-box">ローテーションを生成できませんでした。</div>`;return;}
-  sLastRots=rots;
+    return rots;
+  }
+
+  // 多試行：participants順序をシャッフルして最小ローテ数の結果を採用
+  const TRIALS=10;
+  let bestRots=null;
+  let bestCount=Infinity;
+  for(let i=0;i<TRIALS;i++){
+    const trialParts=i===0?participants:sShuffle([...participants]);
+    const rots=genOnce(trialParts);
+    if(rots.length<bestCount){
+      bestCount=rots.length;
+      bestRots=rots;
+    }
+  }
+
+  if(!bestRots||!bestRots.length){document.getElementById('s-output').innerHTML=`<div class="warn-box">ローテーションを生成できませんでした。</div>`;return;}
+  sLastRots=bestRots;
   sLastCourtCount=courtCount;
-  sRenderOutput(rots,participants);
-  showToast('✅ ローテーション生成完了！CSV出力タブから出力できます');
+  sRenderOutput(bestRots,participants);
+  showToast(`✅ ${TRIALS}回試行で最小${bestCount}ローテ採用`);
 }
 
 function sGetStaffPool(){
