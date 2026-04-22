@@ -882,13 +882,16 @@ function sRenderStaffUI(){
 function sIsStaff(n){return !new Set(mPeople.filter(p=>p.type==='participant').map(p=>p.name.trim())).has(n);}
 
 let sRopeJudgeIndex=0;
+let sJudgeUsage={};// 審査員の総出番回数（ジャンプ＋縄）
 function sPickOneRopeJudge(ropeJudges,usedJudges=[]){
   if(ropeJudges.length===0) return '縄審査員';
   // 同一ローテで未使用の審査員を優先
   const available=ropeJudges.filter(j=>!usedJudges.includes(j.name));
   const pool=available.length>0?available:ropeJudges;
-  const picked=pool[sRopeJudgeIndex%pool.length].name;
-  sRopeJudgeIndex++;
+  // 疲労分散：ジャンプ＋縄の総出番回数が少ない順に選出
+  const sorted=[...pool].sort((a,b)=>(sJudgeUsage[a.name]||0)-(sJudgeUsage[b.name]||0));
+  const picked=sorted[0].name;
+  sJudgeUsage[picked]=(sJudgeUsage[picked]||0)+1;
   return picked;
 }
 
@@ -899,9 +902,10 @@ function sPickSkillJudge(skill,usedJudges=[]){
   // 同一ローテで未使用の審査員を優先
   const available=candidates.filter(j=>!usedJudges.includes(j.name));
   const pool=available.length>0?available:candidates;
-  if(!sJudgeRotIndex[skill]) sJudgeRotIndex[skill]=0;
-  const picked=pool[sJudgeRotIndex[skill]%pool.length].name;
-  sJudgeRotIndex[skill]++;
+  // 疲労分散：ジャンプ＋縄の総出番回数が少ない順に選出
+  const sorted=[...pool].sort((a,b)=>(sJudgeUsage[a.name]||0)-(sJudgeUsage[b.name]||0));
+  const picked=sorted[0].name;
+  sJudgeUsage[picked]=(sJudgeUsage[picked]||0)+1;
   return picked;
 }
 
@@ -910,6 +914,7 @@ function sGenerate(){
   if(participants.length===0){document.getElementById('s-output').innerHTML=`<div class="warn-box">参加者が登録されていません。</div>`;return;}
   Object.keys(sJudgeRotIndex).forEach(k=>{sJudgeRotIndex[k]=0;});
   sRopeJudgeIndex=0;
+  sJudgeUsage={};
   const target=parseInt(document.getElementById('s-targetRots').value);
   const courtCount=parseInt(document.getElementById('s-courtCount').value)||2;
   const basicRots=parseInt(document.getElementById('s-basicRots').value);
@@ -923,6 +928,7 @@ function sGenerate(){
   const names=participants.map(m=>m.name.trim());
   if(new Set(names).size<names.length){document.getElementById('s-output').innerHTML=`<div class="warn-box">参加者名が重複しています。</div>`;return;}
 
+  const turnerUsage={};// 疲労分散用：ターナー総出番回数
   const rots=[];
   const basicJumpers=participants.filter(m=>m.skills.includes('ベーシック'));
   if(basicJumpers.length>0){
@@ -933,10 +939,13 @@ function sGenerate(){
         else{
           const ropers=participants.filter(m=>m.skills.includes('縄')&&m.name.trim()!==jm.name.trim());
           const pool=ropers.length>=2?ropers:participants.filter(m=>m.skills.includes('縄'));
-          turners=pool.length>=2?[pool[0].name.trim(),pool[1].name.trim()]:['運営①','運営②'];
+          // 疲労分散：使用回数の少ない順に2名選出
+          const sorted=[...pool].sort((a,b)=>(turnerUsage[a.name.trim()]||0)-(turnerUsage[b.name.trim()]||0));
+          turners=sorted.length>=2?[sorted[0].name.trim(),sorted[1].name.trim()]:['運営①','運営②'];
         }
         const rj=sPickOneRopeJudge(ropeJudges);
         rots.push({type:'basic',jumper:jm.name.trim(),turners,judgeJ:sPickSkillJudge('ベーシック'),ropeJudge:rj});
+        turners.forEach(n=>{turnerUsage[n]=(turnerUsage[n]||0)+1;});
       }
     }
   }
@@ -1033,10 +1042,11 @@ function sGenerate(){
       }
       else{
         const exAll=[...usedJumpers,...usedTurnerNames];
-        t=sPickPair(allTP,exAll,j.name.trim(),tHist,usedTurnerNames);
+        t=sPickPair(allTP,exAll,j.name.trim(),tHist,usedTurnerNames,turnerUsage);
         if(t&&t.length>=2){
           t.forEach(n=>{if(!usedTurnerNames.includes(n))usedTurnerNames.push(n);});
           sRecordPair(tHist,j.name.trim(),t);
+          t.forEach(n=>{turnerUsage[n]=(turnerUsage[n]||0)+1;});
         }
       }
       const judgeJ=sPickSkillJudge(sk,usedJudgesInRot);
@@ -1062,13 +1072,15 @@ function sGetStaffPool(){
   for(let i=0;i<sStaffCount;i++) pool.push(sStaffNames[i]&&sStaffNames[i].trim()?sStaffNames[i].trim():`追加ターナー${i+1}`);
   return pool;
 }
-function sPickPair(pool,exJ,jName,hist,exN){
+function sPickPair(pool,exJ,jName,hist,exN,usage){
   const avail=pool.filter(p=>!exJ.includes(p.name)&&!exN.includes(p.name));
   if(avail.length<2) return null;
+  // 疲労分散：使用回数の少ない順に並べ替えてから探索
+  const sorted=usage?[...avail].sort((a,b)=>(usage[a.name]||0)-(usage[b.name]||0)):avail;
   const h=hist[jName]||new Set();
   const key=(a,b)=>[a,b].sort().join('||');
-  for(let i=0;i<avail.length;i++) for(let j=i+1;j<avail.length;j++) if(!h.has(key(avail[i].name,avail[j].name))) return [avail[i].name,avail[j].name];
-  return [avail[0].name,avail[1].name];
+  for(let i=0;i<sorted.length;i++) for(let j=i+1;j<sorted.length;j++) if(!h.has(key(sorted[i].name,sorted[j].name))) return [sorted[i].name,sorted[j].name];
+  return [sorted[0].name,sorted[1].name];
 }
 function sRecordPair(hist,jName,pair){if(!hist[jName])hist[jName]=new Set();if(pair&&pair.length>=2)hist[jName].add([...pair].sort().join('||'));}
 
