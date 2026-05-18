@@ -239,7 +239,7 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
 
 <div class="section">
   <div class="sec-title">ベーシック ローテーション設定</div>
-  <div style="margin-bottom:12px;font-size:12px;color:#888">ベーシックは<strong style="color:#333">単独・全ベーシックジャンパー同時</strong>で実施。</div>
+  <div style="margin-bottom:12px;font-size:12px;color:#888">ベーシックは<strong style="color:#333">前半でまとめて実施</strong>。同時展開コート数に従う。</div>
   <div class="row2">
     <div class="field">
       <label>試技回数</label>
@@ -290,8 +290,8 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
       <label>各ジャンパーの目標試技回数（ベーシック除く）</label>
       <select id="s-targetRots" style="width:100%;margin-top:4px">
         <option value="1">各1回</option>
-        <option value="2">各2回</option>
-        <option value="3" selected>各3回</option>
+        <option value="2" selected>各2回</option>
+        <option value="3">各3回</option>
         <option value="4">各4回</option>
       </select>
     </div>
@@ -299,8 +299,8 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
       <label>同時展開コート数（1ローテで何人同時審査するか）</label>
       <select id="s-courtCount" style="width:100%;margin-top:4px">
         <option value="1">1コート</option>
-        <option value="2" selected>2コート</option>
-        <option value="3">3コート</option>
+        <option value="2">2コート</option>
+        <option value="3" selected>3コート</option>
         <option value="4">4コート</option>
         <option value="5">5コート</option>
       </select>
@@ -941,24 +941,45 @@ function sGenerate(){
     const turnerUsage={};// 疲労分散用：ターナー総出番回数
     const rots=[];
     const basicJumpers=participants.filter(m=>m.skills.includes('ベーシック'));
-  if(basicJumpers.length>0){
-    for(let r=0;r<basicRots;r++){
-      for(const jm of basicJumpers){
-        let turners;
-        if(turnerMode==='staff'){turners=[basicStaff1,basicStaff2];}
-        else{
-          const ropers=participants.filter(m=>m.skills.includes('縄')&&m.name.trim()!==jm.name.trim());
-          const pool=ropers.length>=2?ropers:participants.filter(m=>m.skills.includes('縄'));
-          // 疲労分散：使用回数の少ない順に2名選出
-          const sorted=[...pool].sort((a,b)=>(turnerUsage[a.name.trim()]||0)-(turnerUsage[b.name.trim()]||0));
-          turners=sorted.length>=2?[sorted[0].name.trim(),sorted[1].name.trim()]:['運営①','運営②'];
+    if(basicJumpers.length>0){
+      for(let r=0;r<basicRots;r++){
+        // courtCount毎にグループ化（割り切れない最終ローテはコート数少なめ）
+        for(let g=0;g<basicJumpers.length;g+=courtCount){
+          const chunk=basicJumpers.slice(g,g+courtCount);
+          const courts=[];
+          const usedTurnerNames=[];
+          const usedJudgesInRot=[];
+          chunk.forEach(jm=>{
+            let turners;
+            if(turnerMode==='staff'){
+              turners=[basicStaff1,basicStaff2];
+            } else {
+              // 参加者縄1名 + スタッフ縄1名のペアを優先
+              const pRopers=participants.filter(m=>m.skills.includes('縄')&&m.name.trim()!==jm.name.trim()&&!usedTurnerNames.includes(m.name.trim()));
+              const sRopers=mPeople.filter(p=>p.type==='staff'&&p.skills.includes('縄')&&!usedTurnerNames.includes(p.name.trim()));
+              const sortedP=[...pRopers].sort((a,b)=>(turnerUsage[a.name.trim()]||0)-(turnerUsage[b.name.trim()]||0));
+              const sortedS=[...sRopers].sort((a,b)=>(turnerUsage[a.name.trim()]||0)-(turnerUsage[b.name.trim()]||0));
+              if(sortedP.length>=1&&sortedS.length>=1){
+                turners=[sortedP[0].name.trim(),sortedS[0].name.trim()];
+              } else {
+                // フォールバック：縄持ち全員から疲労分散選出
+                const all=participants.filter(m=>m.skills.includes('縄')&&m.name.trim()!==jm.name.trim()&&!usedTurnerNames.includes(m.name.trim()));
+                const sorted=[...all].sort((a,b)=>(turnerUsage[a.name.trim()]||0)-(turnerUsage[b.name.trim()]||0));
+                turners=sorted.length>=2?[sorted[0].name.trim(),sorted[1].name.trim()]:['運営①','運営②'];
+              }
+            }
+            const judgeJ=sPickSkillJudge('ベーシック',usedJudgesInRot);
+            if(judgeJ) usedJudgesInRot.push(judgeJ);
+            const ropeJ=sPickOneRopeJudge(ropeJudges,usedJudgesInRot);
+            if(ropeJ) usedJudgesInRot.push(ropeJ);
+            turners.forEach(n=>{if(!usedTurnerNames.includes(n)) usedTurnerNames.push(n);});
+            turners.forEach(n=>{turnerUsage[n]=(turnerUsage[n]||0)+1;});
+            courts.push({skill:'ベーシック',jumper:jm.name.trim(),jumper2:'',turners,judgeJ,hasRopeJudge:true,ropeJudge:ropeJ});
+          });
+          rots.push({type:'basic',courts});
         }
-        const rj=sPickOneRopeJudge(ropeJudges);
-        rots.push({type:'basic',jumper:jm.name.trim(),turners,judgeJ:sPickSkillJudge('ベーシック'),ropeJudge:rj});
-        turners.forEach(n=>{turnerUsage[n]=(turnerUsage[n]||0)+1;});
       }
     }
-  }
 
   const normalSkills=SKILLS_SOLO.filter(s=>s!=='ベーシック'&&participants.some(m=>m.skills.includes(s)));
   const jSkillCount={};
@@ -1116,20 +1137,13 @@ function sRenderOutput(rots,participants){
   const judgeStats={};mJudges.forEach(j=>{judgeStats[j.name]={rope:0,jump:0};});
 
   rots.forEach(r=>{
-    if(r.type==='basic'){
-      if(stats[r.jumper]){stats[r.jumper].j++;stats[r.jumper].bySkill['ベーシック']++;}
-      r.turners.forEach(t=>{if(stats[t])stats[t].t++;});
-      if(judgeStats[r.judgeJ])judgeStats[r.judgeJ].jump++;
-      if(r.ropeJudge&&judgeStats[r.ropeJudge])judgeStats[r.ropeJudge].rope++;
-    } else {
-      r.courts.forEach(c=>{
-        if(stats[c.jumper]){stats[c.jumper].j++;stats[c.jumper].bySkill[c.skill]++;}
-        if(c.jumper2&&stats[c.jumper2]){stats[c.jumper2].j++;stats[c.jumper2].bySkill[c.skill]++;}
-        if(c.turners)c.turners.forEach(t=>{if(stats[t])stats[t].t++;});
-        if(judgeStats[c.judgeJ])judgeStats[c.judgeJ].jump++;
-        if(c.hasRopeJudge&&c.ropeJudge&&judgeStats[c.ropeJudge])judgeStats[c.ropeJudge].rope++;
-      });
-    }
+    r.courts.forEach(c=>{
+      if(stats[c.jumper]){stats[c.jumper].j++;stats[c.jumper].bySkill[c.skill]++;}
+      if(c.jumper2&&stats[c.jumper2]){stats[c.jumper2].j++;stats[c.jumper2].bySkill[c.skill]++;}
+      if(c.turners)c.turners.forEach(t=>{if(stats[t])stats[t].t++;});
+      if(judgeStats[c.judgeJ])judgeStats[c.judgeJ].jump++;
+      if(c.hasRopeJudge&&c.ropeJudge&&judgeStats[c.ropeJudge])judgeStats[c.ropeJudge].rope++;
+    });
   });
 
   let html=`<div class="section"><div class="sec-title">生成結果サマリー</div>
@@ -1143,17 +1157,22 @@ function sRenderOutput(rots,participants){
   rots.forEach((r,i)=>{
     const num=String(i+1).padStart(2,'0');
     if(r.type==='basic'){
+      const courts=r.courts||[];
+      const colTemplate=Array(Math.min(courts.length,5)).fill('1fr').join(' ');
       html+=`<div class="rot-card"><div class="rot-header">
         <span class="rot-num">Rot. ${num}</span>
         <span class="skill-badge" style="${bs('ベーシック')}">ベーシック（リズム）</span>
-        <span style="font-size:11px;color:#999">単独・1人審査</span>
-      </div><div style="padding:12px 16px">
-        <div class="court-row" style="margin-bottom:8px"><span class="role-tag">ジャンパー</span><span class="chip jumper">${r.jumper}</span></div>
-        <div class="court-row" style="margin-bottom:8px"><span class="role-tag">ターナー</span>${r.turners.map(t=>`<span class="chip ${sIsStaff(t)?'staff':'turner'}">${t}</span>`).join('')}</div>
-        <div class="judge-sep">
-          <div class="court-row" style="margin-bottom:5px"><span class="role-tag" style="font-size:11px">J審査員</span><span class="chip judge-j">${r.judgeJ}</span></div>
-          <div class="court-row"><span class="role-tag" style="font-size:11px">R審査員</span><span class="chip judge-r">${r.ropeJudge||'縄審査員'}</span></div>
-        </div>
+        <span style="font-size:11px;color:#999">${courts.length}コート同時進行</span>
+      </div><div class="rot-courts" style="grid-template-columns:${colTemplate}">
+        ${courts.map((c,ci)=>`<div class="court-cell">
+          <div class="court-label">COURT ${String.fromCharCode(65+ci)}</div>
+          <div class="court-row"><span class="role-tag">ジャンパー</span><span class="chip jumper">${c.jumper}</span></div>
+          <div class="court-row"><span class="role-tag">ターナー</span>${c.turners.map(t=>`<span class="chip ${sIsStaff(t)?'staff':'turner'}">${t}</span>`).join('')}</div>
+          <div class="judge-sep">
+            <div class="court-row" style="margin-bottom:4px"><span class="role-tag" style="font-size:11px">J審査員</span><span class="chip judge-j">${c.judgeJ}</span></div>
+            <div class="court-row"><span class="role-tag" style="font-size:11px">R審査員</span><span class="chip judge-r">${c.ropeJudge||'縄審査員'}</span></div>
+          </div>
+        </div>`).join('')}
       </div></div>`;
     } else {
       const courts=r.courts||[];
@@ -1440,13 +1459,10 @@ function exportRotationCSV(){
   const rows=[['Rot番号','種別','コート','スキル','ジャンパー','ジャンパー2','ターナー1','ターナー2','J審査員','縄審査員']];
   sLastRots.forEach((r,i)=>{
     const num=String(i+1).padStart(2,'0');
-    if(r.type==='basic'){
-      rows.push([num,'ベーシック','—','ベーシック',r.jumper,'',r.turners[0]||'',r.turners[1]||'',r.judgeJ,r.ropeJudge||'']);
-    } else {
-      r.courts.forEach((c,ci)=>{
-        rows.push([num,'通常',`COURT ${String.fromCharCode(65+ci)}`,c.skill,c.jumper,c.jumper2||'',c.turners[0]||'',c.turners[1]||'',c.judgeJ,c.hasRopeJudge?(c.ropeJudge||''):'（不要）']);
-      });
-    }
+    const isBasic=r.type==='basic';
+    r.courts.forEach((c,ci)=>{
+      rows.push([num,isBasic?'ベーシック':'通常',`COURT ${String.fromCharCode(65+ci)}`,c.skill,c.jumper,c.jumper2||'',c.turners[0]||'',c.turners[1]||'',c.judgeJ,c.hasRopeJudge?(c.ropeJudge||''):'（不要）']);
+    });
   });
   copyToClipboard(rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n'),'ローテーションCSV');
 }

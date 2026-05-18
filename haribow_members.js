@@ -10,31 +10,30 @@
 // ════════════════════════════════════════════════
 
 const HARIBOW_MEMBERS = [
-  {name:'かづき',type:'participant',skills:['ベーシック','ハリー','縄'],isJudge:false},
-  {name:'せな',type:'participant',skills:['３倍','アクロ'],isJudge:false},
-  {name:'シュースケ',type:'participant',skills:['ハリー','縄'],isJudge:false},
-  {name:'はるき',type:'participant',skills:['３倍','縄'],isJudge:false},
-  {name:'この',type:'participant',skills:['ベーシック','ハリー','３倍','縄'],isJudge:false},
-  {name:'かい',type:'participant',skills:['３倍','フロア','アクロ','縄'],isJudge:false},
-  {name:'まなみ',type:'participant',skills:['ベーシック'],isJudge:false},
-  {name:'しゅうと',type:'participant',skills:['３倍','フロア','縄'],isJudge:false},
-  {name:'工藤美怜',type:'participant',skills:['３倍'],isJudge:false},
-  {name:'ゆうか',type:'participant',skills:['ベーシック','３倍','縄'],isJudge:false},
-  {name:'エポ',type:'participant',skills:['ベーシック'],isJudge:false},
-  {name:'まいと',type:'participant',skills:['アクロ'],isJudge:false},
-  {name:'コキン',type:'participant',skills:['フロア'],isJudge:false},
-  {name:'ゆうすけ',type:'participant',skills:['ハリー','縄'],isJudge:false},
-  {name:'ゆうり',type:'participant',skills:['アクロ'],isJudge:false},
-  {name:'こう',type:'participant',skills:['３倍'],isJudge:false},
-  {name:'さら',type:'participant',skills:['３倍','縄'],isJudge:false},
-  {name:'森かなた',type:'participant',skills:['ハリー','縄'],isJudge:false},
-  {name:'すけ',type:'participant',skills:['アクロ'],isJudge:false},
-  {name:'SAY-YEAH',type:'participant',skills:['ベーシック','ハリー'],isJudge:false},
-  {name:'門野暖大',type:'participant',skills:['ベーシック','縄'],isJudge:false},
-  {name:'せり',type:'participant',skills:['ベーシック','３倍','アクロ','縄'],isJudge:false},
-  {name:'るい',type:'participant',skills:['ハリー'],isJudge:false},
-  {name:'たいよう',type:'participant',skills:['ベーシック','ハリー','縄'],isJudge:false},
-  {name:'りん',type:'participant',skills:['ベーシック','ハリー'],isJudge:false},
+  {name:'渡邉 沙來',type:'participant',skills:['縄','３倍'],isJudge:false},
+  {name:'森哉大',type:'participant',skills:['ハリー'],isJudge:false},
+  {name:'今村琳乃介',type:'participant',skills:['ベーシック','ハリー'],isJudge:false},
+  {name:'仁和柊人',type:'participant',skills:['縄','フロア'],isJudge:false},
+  {name:'服部快',type:'participant',skills:['アクロ'],isJudge:false},
+  {name:'関野咲希',type:'participant',skills:['ベーシック'],isJudge:false},
+  {name:'稗田悠介',type:'participant',skills:['縄','ハリー'],isJudge:false},
+  {name:'下村琉唯',type:'participant',skills:['縄','ハリー'],isJudge:false},
+  {name:'長谷川惺也',type:'participant',skills:['ベーシック'],isJudge:false},
+  {name:'森大耀',type:'participant',skills:['ベーシック','３倍'],isJudge:false},
+  {name:'金箱秀亮',type:'participant',skills:['縄','ハリー'],isJudge:false},
+  {name:'三好薫月',type:'participant',skills:['縄','ベーシック','ハリー'],isJudge:false},
+  {name:'徳永　芹',type:'participant',skills:['縄','ベーシック','３倍','アクロ'],isJudge:false},
+  {name:'山﨑理人',type:'participant',skills:['アクロ'],isJudge:false},
+  {name:'鈴木小暖',type:'participant',skills:['ハリー'],isJudge:false},
+  {name:'飯田優佳',type:'participant',skills:['縄','ベーシック','３倍'],isJudge:false},
+  {name:'永井竜介',type:'participant',skills:['アクロ'],isJudge:false},
+  {name:'工藤美怜',type:'participant',skills:['縄','３倍'],isJudge:false},
+  {name:'吉村悠里',type:'participant',skills:['フロア','アクロ'],isJudge:false},
+  {name:'山岸煌',type:'participant',skills:['３倍'],isJudge:false},
+  {name:'鈴木真海',type:'participant',skills:['ベーシック'],isJudge:false},
+  {name:'宮川　凛空',type:'participant',skills:['フロア','アクロ'],isJudge:false},
+  {name:'西川世那',type:'participant',skills:['３倍','アクロ'],isJudge:false},
+  {name:'二階堂笑穂',type:'participant',skills:['ベーシック'],isJudge:false},
   {name:'スタッフA',type:'staff',skills:['フロア','縄'],isJudge:false},
   {name:'スタッフB',type:'staff',skills:['アクロ','縄'],isJudge:false},
   {name:'スタッフC',type:'staff',skills:['アクロ','縄'],isJudge:false},
@@ -54,7 +53,7 @@ const HARIBOW_JUDGES = [
 ];
 
 // フロア専用ターナー（スタッフ名）
-const HARIBOW_FLOOR_STAFF = ['スタッフみさき', 'スタッフそら'];
+const HARIBOW_FLOOR_STAFF = ['みさき', 'そら'];
 
-// アクロ専用ターナー（スタッフ名）
-const HARIBOW_ACRO_STAFF = ['スタッフA', 'スタッフB'];
+// アクロ専用ターナー（スタッフ名）— フロアと兼任
+const HARIBOW_ACRO_STAFF = ['みさき', 'そら'];
