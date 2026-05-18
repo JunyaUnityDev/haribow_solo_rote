@@ -195,7 +195,7 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
 
 <div class="section">
   <div class="sec-title">スタッフ</div>
-  <div style="font-size:12px;color:#999;margin-bottom:10px">「審査員」をONにすると、チーム編成の候補から除外されます（ソロのターナー候補には残ります）。</div>
+  <div style="font-size:12px;color:#999;margin-bottom:10px">「審査員」をONにすると、ソロのターナー候補から除外され、チーム編成に加わります。</div>
   <div id="m-staff-wrap"></div>
   <div class="btn-row">
     <button class="btn" onclick="mAddPerson('staff')">＋ スタッフを追加</button>
@@ -334,7 +334,7 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
 <!-- ════ TAB 2: TEAM ════ -->
 <div id="tab-team" class="tab-content">
 <h2>チーム編成　自動生成</h2>
-<div class="sub">メンバー登録タブのデータを使用します。審査員兼任スタッフはチーム候補から除外されます。</div>
+<div class="sub">メンバー登録タブのデータを使用します。審査員兼任スタッフもチーム編成に加わります（ソロのターナー候補からは除外）。</div>
 
 <div id="team-member-warning" class="warn-box" style="margin-bottom:20px;display:none">
   ⚠️ メンバーが登録されていません。先に「メンバー登録」タブで参加者を登録してください。
@@ -956,7 +956,7 @@ function sGenerate(){
             } else {
               // 参加者縄1名 + スタッフ縄1名のペアを優先
               const pRopers=participants.filter(m=>m.skills.includes('縄')&&m.name.trim()!==jm.name.trim()&&!usedTurnerNames.includes(m.name.trim()));
-              const sRopers=mPeople.filter(p=>p.type==='staff'&&p.skills.includes('縄')&&!usedTurnerNames.includes(p.name.trim()));
+              const sRopers=mPeople.filter(p=>p.type==='staff'&&!p.isJudge&&p.skills.includes('縄')&&!usedTurnerNames.includes(p.name.trim()));
               const sortedP=[...pRopers].sort((a,b)=>(turnerUsage[a.name.trim()]||0)-(turnerUsage[b.name.trim()]||0));
               const sortedS=[...sRopers].sort((a,b)=>(turnerUsage[a.name.trim()]||0)-(turnerUsage[b.name.trim()]||0));
               if(sortedP.length>=1&&sortedS.length>=1){
@@ -1235,18 +1235,29 @@ let tLastResult=null;
 
 function teamSyncMembers(){
   const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim());
-  const nonJudgeStaff=mPeople.filter(p=>p.type==='staff'&&!p.isJudge&&p.name.trim());
+  const allStaff=mPeople.filter(p=>p.type==='staff'&&p.name.trim());
+  const judgeStaff=allStaff.filter(p=>p.isJudge);
   document.getElementById('team-member-warning').style.display=participants.length===0?'block':'none';
   document.getElementById('team-member-summary').innerHTML=`
     <div class="summary-row"><span class="summary-label">参加者（チーム候補）</span><span class="summary-val">${participants.length}名</span></div>
-    <div class="summary-row"><span class="summary-label">非審査員スタッフ（チーム候補）</span><span class="summary-val">${nonJudgeStaff.length}名</span></div>
-    <div class="summary-row"><span class="summary-label">審査員スタッフ（除外）</span><span class="summary-val">${mPeople.filter(p=>p.type==='staff'&&p.isJudge).length}名</span></div>`;
+    <div class="summary-row"><span class="summary-label">スタッフ（チーム候補）</span><span class="summary-val">${allStaff.length}名</span></div>
+    <div class="summary-row"><span class="summary-label">うち審査員スタッフ（ソロ除外・チーム参加）</span><span class="summary-val">${judgeStaff.length}名</span></div>`;
 }
 function tCheckConditions(team){return T_CONDITIONS.map(c=>({skill:c.skill,required:c.count,actual:team.filter(p=>p.skills.includes(c.skill)).length,ok:team.filter(p=>p.skills.includes(c.skill)).length>=c.count}));}
 function tTeamScore(team){const conds=tCheckConditions(team);return (conds.every(c=>c.ok)?1000:0)+new Set(team.flatMap(p=>p.skills)).size*3+team.filter(p=>p.skills.length>=2).length*2;}
+function tTeamsetScore(teams){
+  let total=teams.reduce((s,t)=>s+tTeamScore(t),0);
+  const ropeCounts=teams.map(t=>t.filter(p=>p.skills.includes('縄')).length);
+  total-=(Math.max(...ropeCounts)-Math.min(...ropeCounts))*10;
+  ['アクロ','３倍','ハリー','ベーシック','フロア'].forEach(sk=>{
+    const c=teams.map(t=>t.filter(p=>p.skills.includes(sk)).length);
+    total-=(Math.max(...c)-Math.min(...c))*5;
+  });
+  return total;
+}
 function tGenerate(){
   const participants=mPeople.filter(p=>p.type==='participant'&&p.name.trim()&&p.skills.length>0);
-  const nonJudgeStaff=mPeople.filter(p=>p.type==='staff'&&!p.isJudge&&p.name.trim()&&p.skills.length>0);
+  const nonJudgeStaff=mPeople.filter(p=>p.type==='staff'&&p.name.trim()&&p.skills.length>0);
   const pool=[...participants,...nonJudgeStaff];
   if(participants.length===0){document.getElementById('t-output').innerHTML=`<div class="warn-box">参加者が登録されていません。</div>`;return;}
   const numTeams=parseInt(document.getElementById('t-teamCount').value)||1;
@@ -1261,7 +1272,7 @@ function tGenerate(){
   for(let trial=0;trial<800;trial++){
     const result=tTryAssign(pool,participants,nonJudgeStaff,numTeams,targetP,targetS,mode);
     if(result&&result.length>0){
-      const sc=result.reduce((s,t)=>s+tTeamScore(t),0);
+      const sc=tTeamsetScore(result);
       if(sc>bestScore){bestScore=sc;best=result;}
     }
   }
