@@ -34,11 +34,11 @@ const HARIBOW_MEMBERS = [
   {name:'宮川　凛空',type:'participant',skills:['フロア','アクロ'],isJudge:false},
   {name:'西川世那',type:'participant',skills:['３倍','アクロ'],isJudge:false},
   {name:'二階堂笑穂',type:'participant',skills:['ベーシック'],isJudge:false},
-  {name:'スタッフA',type:'staff',skills:['フロア','縄'],isJudge:false},
-  {name:'スタッフB',type:'staff',skills:['アクロ','縄'],isJudge:false},
-  {name:'スタッフC',type:'staff',skills:['アクロ','縄'],isJudge:false},
-  {name:'スタッフD',type:'staff',skills:['ベーシック','フロア','縄'],isJudge:false},
-  {name:'スタッフE',type:'staff',skills:['ハリー','縄'],isJudge:false},
+  {name:'潤弥',type:'staff',skills:['ベーシック'],isJudge:true},
+  {name:'まほろ',type:'staff',skills:['アクロ','縄'],isJudge:true},
+  {name:'りゅうすけ',type:'staff',skills:['ハリー','縄'],isJudge:true},
+  {name:'しゅーへー',type:'staff',skills:['ベーシック','縄'],isJudge:true},
+  {name:'たくみ',type:'staff',skills:['フロア','アクロ','縄'],isJudge:true},
 ];
 
 const HARIBOW_JUDGES = [

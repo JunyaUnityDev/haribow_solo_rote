@@ -1247,11 +1247,16 @@ function tCheckConditions(team){return T_CONDITIONS.map(c=>({skill:c.skill,requi
 function tTeamScore(team){const conds=tCheckConditions(team);return (conds.every(c=>c.ok)?1000:0)+new Set(team.flatMap(p=>p.skills)).size*3+team.filter(p=>p.skills.length>=2).length*2;}
 function tTeamsetScore(teams){
   let total=teams.reduce((s,t)=>s+tTeamScore(t),0);
+  // 縄分散: variance ベース + 必要数（2）未満チームへの強ペナルティ
   const ropeCounts=teams.map(t=>t.filter(p=>p.skills.includes('縄')).length);
-  total-=(Math.max(...ropeCounts)-Math.min(...ropeCounts))*10;
+  const ropeAvg=ropeCounts.reduce((s,n)=>s+n,0)/teams.length;
+  total-=ropeCounts.reduce((s,n)=>s+Math.pow(n-ropeAvg,2),0)*30;
+  total-=ropeCounts.filter(n=>n<2).length*300;
+  // 他5スキル: variance ベース
   ['アクロ','３倍','ハリー','ベーシック','フロア'].forEach(sk=>{
     const c=teams.map(t=>t.filter(p=>p.skills.includes(sk)).length);
-    total-=(Math.max(...c)-Math.min(...c))*5;
+    const avg=c.reduce((s,n)=>s+n,0)/teams.length;
+    total-=c.reduce((s,n)=>s+Math.pow(n-avg,2),0)*10;
   });
   return total;
 }
@@ -1284,35 +1289,54 @@ function tGenerate(){
   showToast('✅ チーム編成完了！CSV出力タブから出力できます');
 }
 function tTryAssign(pool,participants,nonJudgeStaff,numTeams,targetP,targetS,mode){
-  const teams=[];const pCount={};pool.forEach(p=>{pCount[p.name]=0;});const maxPP=1;
-  for(let ti=0;ti<numTeams;ti++){
-    const inT=new Set();const team=[];
-    const avail=(type,fn)=>(type==='p'?participants:nonJudgeStaff).filter(p=>!inT.has(p.name)&&pCount[p.name]<maxPP&&(!fn||fn(p)));
-    const availAll=(fn)=>pool.filter(p=>!inT.has(p.name)&&pCount[p.name]<maxPP&&(!fn||fn(p)));
-    const sorted=(arr)=>[...arr].sort((a,b)=>((b.skills.length*2+(b.skills.includes('縄')?3:0)-pCount[b.name]*20)-(a.skills.length*2+(a.skills.includes('縄')?3:0)-pCount[a.name]*20))+(Math.random()-.5)*5);
-    for(let n=0;n<2;n++){
-      const needP=team.filter(p=>participants.includes(p)).length<targetP;
-      const r=needP?sorted(avail('p',p=>p.skills.includes('縄'))):sorted(avail('s',p=>p.skills.includes('縄')));
-      const pick=(r.length?r:sorted(availAll(p=>p.skills.includes('縄'))));
-      if(!pick.length) break;
-      team.push(pick[0]);inT.add(pick[0].name);
+  const shuffle=a=>{const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}return x;};
+  const teams=Array.from({length:numTeams},()=>[]);
+  const inT=Array.from({length:numTeams},()=>new Set());
+  const pCount={};pool.forEach(p=>{pCount[p.name]=0;});
+  const maxPP=1;
+  const isPart=p=>participants.includes(p);
+  const pCnt=t=>teams[t].filter(isPart).length;
+  const sCnt=t=>teams[t].length-pCnt(t);
+  const canAdd=(p,t)=>{
+    if(teams[t].length>=5) return false;
+    if(inT[t].has(p.name)) return false;
+    if(pCount[p.name]>=maxPP) return false;
+    if(isPart(p)&&pCnt(t)>=targetP) return false;
+    if(!isPart(p)&&sCnt(t)>=targetS) return false;
+    return true;
+  };
+  const addTo=(p,t)=>{teams[t].push(p);inT[t].add(p.name);pCount[p.name]++;};
+  // Step 1: 縄持ちを「もっとも縄が少ないチーム」優先で割り当て（ラウンドロビン的均等化）
+  shuffle(pool.filter(p=>p.skills.includes('縄'))).forEach(r=>{
+    let bestT=-1,bestCnt=Infinity;
+    for(let t=0;t<numTeams;t++){
+      if(!canAdd(r,t)) continue;
+      const cnt=teams[t].filter(p=>p.skills.includes('縄')).length;
+      if(cnt<bestCnt){bestCnt=cnt;bestT=t;}
     }
-    for(const sk of['アクロ','３倍','ハリー','ベーシック','フロア']){
-      if(team.some(p=>p.skills.includes(sk))||team.length>=5)continue;
-      const curP=team.filter(p=>participants.includes(p)).length;
-      const r=curP<targetP?sorted(avail('p',p=>p.skills.includes(sk))):sorted(avail('s',p=>p.skills.includes(sk)));
-      const pick=r.length?r:sorted(availAll(p=>p.skills.includes(sk)));
-      if(pick.length){team.push(pick[0]);inT.add(pick[0].name);}
+    if(bestT>=0) addTo(r,bestT);
+  });
+  // Step 2: 各必須スキル（縄以外）をチーム順に充足。縄持ち以外を優先して縄ストックを温存
+  for(const sk of shuffle(['アクロ','３倍','ハリー','ベーシック','フロア'])){
+    for(let t=0;t<numTeams;t++){
+      if(teams[t].some(p=>p.skills.includes(sk))||teams[t].length>=5) continue;
+      const cand=shuffle(pool.filter(p=>p.skills.includes(sk)&&canAdd(p,t)));
+      cand.sort((a,b)=>(a.skills.includes('縄')?1:0)-(b.skills.includes('縄')?1:0));
+      if(cand.length>0) addTo(cand[0],t);
     }
-    while(team.length<5){
-      const curP=team.filter(p=>participants.includes(p)).length;
-      const r=curP<targetP?sorted(avail('p')):sorted(avail('s'));
-      const pick=r.length?r:sorted(availAll());
-      if(!pick.length) break;
-      team.push(pick[0]);inT.add(pick[0].name);
+  }
+  // Step 3: 残りスロットを5人まで埋める（ratio優先、最後の手段としてratio緩和）
+  for(let t=0;t<numTeams;t++){
+    while(teams[t].length<5){
+      const cand=shuffle(pool.filter(p=>canAdd(p,t)));
+      if(cand.length===0){
+        const fb=shuffle(pool.filter(p=>!inT[t].has(p.name)&&pCount[p.name]<maxPP));
+        if(fb.length===0) break;
+        addTo(fb[0],t);
+      } else {
+        addTo(cand[0],t);
+      }
     }
-    teams.push(team);
-    team.forEach(p=>{pCount[p.name]++;});
   }
   return teams;
 }
