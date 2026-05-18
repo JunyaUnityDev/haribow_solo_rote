@@ -175,6 +175,15 @@ td{padding:9px 10px;border-bottom:.5px solid #f0f0f0;vertical-align:middle}
 <div class="sub">ここで登録したデータが、ソロ審査・チーム編成・概算タブに自動反映されます</div>
 
 <div class="section">
+  <div class="sec-title">会場</div>
+  <div style="font-size:12px;color:#999;margin-bottom:10px">会場を切り替えると、参加者・審査員のデフォルトデータが入れ替わります。「サンプルに戻す」を押すと現会場のデフォルトに戻ります。</div>
+  <div style="display:flex;gap:8px">
+    <button id="loc-btn-tokyo" class="btn primary" onclick="switchLocation('tokyo')">東京</button>
+    <button id="loc-btn-osaka" class="btn" onclick="switchLocation('osaka')">大阪</button>
+  </div>
+</div>
+
+<div class="section">
   <div class="sec-title">スキル凡例</div>
   <div style="display:flex;gap:7px;flex-wrap:wrap" id="m-legend"></div>
 </div>
@@ -692,6 +701,14 @@ function bs(s){const c=SC[s]||{bg:'#F4F4F4',bd:'#DDD',tx:'#999'};return `backgro
 /* ════ TAB 0: MEMBERS ════ */
 let mPeople=[];
 let mJudges=[];
+
+function switchLocation(loc){
+  if(typeof setHaribowLocation==='function') setHaribowLocation(loc);
+  document.getElementById('loc-btn-tokyo').className='btn'+(loc==='tokyo'?' primary':'');
+  document.getElementById('loc-btn-osaka').className='btn'+(loc==='osaka'?' primary':'');
+  mResetDefault();
+  showToast(loc==='osaka'?'🏛 大阪会場のデータを読み込みました':'🏛 東京会場のデータを読み込みました');
+}
 
 function mDefaultPeople(){
   // haribow_members.js から読み込む

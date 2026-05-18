@@ -1,15 +1,17 @@
 // ════════════════════════════════════════════════
 // HARIBOW オーディション メンバーデータ
 // ════════════════════════════════════════════════
-// このファイルを編集してメンバー・審査員情報を管理します。
-// 来年のオーディションでもこのファイルだけ更新すればOKです。
+// 東京会場・大阪会場の2セットを保持。
+// UI右上の「東京 / 大阪」トグルで切り替え。setHaribowLocation() を呼ぶと
+// HARIBOW_MEMBERS / HARIBOW_JUDGES の参照先が切り替わる。
 //
 // スキル一覧：ベーシック / ハリー / ３倍 / フロア / アクロ / 縄
 // type: 'participant' = 参加者, 'staff' = スタッフ
-// isJudge: true にするとチーム編成候補から除外される（審査員兼任スタッフ用）
+// isJudge: true でソロのターナー候補から除外、チーム編成に加わる
 // ════════════════════════════════════════════════
 
-const HARIBOW_MEMBERS = [
+// ─── 東京会場 ─────────────────────────────────────
+const HARIBOW_MEMBERS_TOKYO = [
   {name:'渡邉 沙來',type:'participant',skills:['縄','３倍'],isJudge:false},
   {name:'森哉大',type:'participant',skills:['ハリー'],isJudge:false},
   {name:'今村琳乃介',type:'participant',skills:['ベーシック','ハリー'],isJudge:false},
@@ -41,7 +43,7 @@ const HARIBOW_MEMBERS = [
   {name:'たくみ',type:'staff',skills:['フロア','アクロ','縄'],isJudge:true},
 ];
 
-const HARIBOW_JUDGES = [
+const HARIBOW_JUDGES_TOKYO = [
   {name:'潤弥',skills:['ベーシック']},
   {name:'まほろ',skills:['３倍','縄']},
   {name:'りゅうすけ',skills:['ハリー']},
@@ -52,8 +54,31 @@ const HARIBOW_JUDGES = [
   {name:'まきと',skills:['縄']},
 ];
 
+// ─── 大阪会場 ─────────────────────────────────────
+// （ユーザーから提供後にここを埋める）
+const HARIBOW_MEMBERS_OSAKA = [];
+
+const HARIBOW_JUDGES_OSAKA = [];
+
+// ─── 共通 ─────────────────────────────────────────
 // フロア専用ターナー（スタッフ名）
 const HARIBOW_FLOOR_STAFF = ['みさき', 'そら'];
 
 // アクロ専用ターナー（スタッフ名）— フロアと兼任
 const HARIBOW_ACRO_STAFF = ['みさき', 'そら'];
+
+// ─── 切り替え ────────────────────────────────────
+let HARIBOW_LOCATION = 'tokyo';
+let HARIBOW_MEMBERS = HARIBOW_MEMBERS_TOKYO;
+let HARIBOW_JUDGES = HARIBOW_JUDGES_TOKYO;
+
+function setHaribowLocation(loc){
+  HARIBOW_LOCATION = loc;
+  if(loc === 'osaka'){
+    HARIBOW_MEMBERS = HARIBOW_MEMBERS_OSAKA;
+    HARIBOW_JUDGES = HARIBOW_JUDGES_OSAKA;
+  } else {
+    HARIBOW_MEMBERS = HARIBOW_MEMBERS_TOKYO;
+    HARIBOW_JUDGES = HARIBOW_JUDGES_TOKYO;
+  }
+}
