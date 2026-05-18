@@ -55,10 +55,35 @@ const HARIBOW_JUDGES_TOKYO = [
 ];
 
 // ─── 大阪会場 ─────────────────────────────────────
-// （ユーザーから提供後にここを埋める）
-const HARIBOW_MEMBERS_OSAKA = [];
+// 参加者: 2026/05/18 時点でフォーム回答SSから抽出（自己評価ベース、フォームの動画提出基準）
+//   縄/ベーシック/ハリー(=ステップ)/３倍 ≥4 で skill 付与、アクロ/フロア ≥3 で skill 付与
+// スタッフ/審査員: 東京と同一構成
+const HARIBOW_MEMBERS_OSAKA = [
+  {name:'佐伯健太',type:'participant',skills:['縄','３倍'],isJudge:false},
+  {name:'鈴木　梨優',type:'participant',skills:['縄','ハリー'],isJudge:false},
+  {name:'佐藤姫礼',type:'participant',skills:['縄','ベーシック'],isJudge:false},
+  {name:'太田煌大',type:'participant',skills:['アクロ','縄','３倍'],isJudge:false},
+  {name:'太田唄心',type:'participant',skills:['アクロ','フロア'],isJudge:false},
+  {name:'門野暖大',type:'participant',skills:['アクロ','縄','ベーシック'],isJudge:false},
+  {name:'足立葵叶',type:'participant',skills:['アクロ','フロア','縄'],isJudge:false},
+  {name:'正木菜海',type:'participant',skills:['フロア'],isJudge:false},
+  {name:'潤弥',type:'staff',skills:['ベーシック'],isJudge:true},
+  {name:'まほろ',type:'staff',skills:['アクロ','縄'],isJudge:true},
+  {name:'りゅうすけ',type:'staff',skills:['ハリー','縄'],isJudge:true},
+  {name:'しゅーへー',type:'staff',skills:['ベーシック','縄'],isJudge:true},
+  {name:'たくみ',type:'staff',skills:['フロア','アクロ','縄'],isJudge:true},
+];
 
-const HARIBOW_JUDGES_OSAKA = [];
+const HARIBOW_JUDGES_OSAKA = [
+  {name:'潤弥',skills:['ベーシック']},
+  {name:'まほろ',skills:['３倍','縄']},
+  {name:'りゅうすけ',skills:['ハリー']},
+  {name:'しゅーへー',skills:['縄']},
+  {name:'海野',skills:['フロア','アクロ']},
+  {name:'たくみ',skills:['フロア','アクロ']},
+  {name:'おち',skills:['縄']},
+  {name:'まきと',skills:['縄']},
+];
 
 // ─── 共通 ─────────────────────────────────────────
 // フロア専用ターナー（スタッフ名）
